@@ -47,7 +47,7 @@ export default function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <iframe
-        src="/cwf.html"
+        src={`${import.meta.env.BASE_URL}cwf.html`}
         style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
         title="GuidingCare CWF"
       />
