@@ -155,43 +155,41 @@ export function HavenWindow({
     const resolvedText = lastFollowUpQuery ?? trimmed
 
     const userMsg: Message = { id: `u-${Date.now()}`, role: 'user', content: trimmed }
-    setMessages(prev => [...prev, userMsg])
+
+    // Real backend: show typing indicator while awaiting the network call
+    if (onSend) {
+      setMessages(prev => [...prev, userMsg])
+      setMenuOpen(false)
+      setLearnMoreOpen(false)
+      setLoading(true)
+      try {
+        const reply = await onSend(resolvedText)
+        if (cancelledRef.current) return
+        setMessages(prev => [...prev, {
+          id: `a-${Date.now()}`,
+          role: 'assistant',
+          content: reply,
+          followUp: getFollowUp(resolvedText),
+          followUpQuery: getFollowUpQuery(resolvedText),
+        }])
+      } finally {
+        if (!cancelledRef.current) setLoading(false)
+      }
+      return
+    }
+
+    // Mock path: reply is synchronous — batch user message + assistant reply in one render
+    const guardrail = getGuardrailMessage(resolvedText)
+    const replyContent = guardrail ?? getMockReply(resolvedText, memberName, mockMemberId)
+    setMessages(prev => [...prev, userMsg, {
+      id: `a-${Date.now()}`,
+      role: 'assistant',
+      content: replyContent,
+      followUp: guardrail ? undefined : getFollowUp(resolvedText),
+      followUpQuery: guardrail ? undefined : getFollowUpQuery(resolvedText),
+    }])
     setMenuOpen(false)
     setLearnMoreOpen(false)
-    setLoading(true)
-
-    try {
-      // Check guardrails before any backend call
-      const guardrail = getGuardrailMessage(resolvedText)
-      if (guardrail) {
-        await Promise.resolve()
-        if (cancelledRef.current) return // Member switched mid-response — discard
-        setMessages(prev => [...prev, { id: `a-${Date.now()}`, role: 'assistant', content: guardrail }])
-        return
-      }
-
-      let reply: string
-      if (onSend) {
-        reply = await onSend(resolvedText)
-        if (cancelledRef.current) return
-      } else {
-        await Promise.resolve()
-        if (cancelledRef.current) return // Member switched while generating — discard partial output
-        reply = getMockReply(resolvedText, memberName, mockMemberId)
-      }
-
-      if (cancelledRef.current) return
-
-      setMessages(prev => [...prev, {
-        id: `a-${Date.now()}`,
-        role: 'assistant',
-        content: reply,
-        followUp: getFollowUp(resolvedText),
-        followUpQuery: getFollowUpQuery(resolvedText),
-      }])
-    } finally {
-      if (!cancelledRef.current) setLoading(false)
-    }
   }, [loading, hasData, memberName, mockMemberId, onSend, messages])
 
   /* ── Drag ── */
