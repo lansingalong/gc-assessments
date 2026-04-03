@@ -10,6 +10,7 @@ import panelStyles from './HavenPanel.module.css'
 import { getMockReply, getFollowUp, getFollowUpQuery, getGuardrailMessage } from './mockReplies'
 import { HomeWelcome } from './HomeWelcome'
 import { MemberChatWindow } from './MemberChatWindow'
+import { SukiWindow } from './SukiWindow'
 import chatIcon from '@/assets/chat.png'
 import chevronForwardIcon from '@/assets/chevron_forward.png'
 
@@ -33,6 +34,9 @@ export interface HavenWindowProps {
   switchConfirmation?: string
   /** True when the care manager is on the home dashboard (no active member) */
   isHome?: boolean
+  age?: string
+  gender?: string
+  dob?: string
 }
 
 type WindowState = 'open' | 'minimized' | 'closed'
@@ -55,6 +59,9 @@ export function HavenWindow({
   hasData = true,
   switchConfirmation,
   isHome = false,
+  age = '26',
+  gender = 'Male',
+  dob = '03/01/1989',
 }: HavenWindowProps) {
   const [winState, setWinState] = useState<WindowState>('closed')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -62,6 +69,7 @@ export function HavenWindow({
   const [loading, setLoading] = useState(false)
   const [learnMoreOpen, setLearnMoreOpen] = useState(false)
   const [memberChatOpen, setMemberChatOpen] = useState(false)
+  const [sukiOpen, setSukiOpen] = useState(false)
   const [fabExpanded, setFabExpanded] = useState(true)
 
   const [pos, setPos] = useState({ left: 0, top: 0 })
@@ -268,12 +276,7 @@ export function HavenWindow({
   ) : null
 
   // ── FAB — always rendered ──
-  const fab = isHome ? (
-    <button className={styles.fab} onClick={openWindow} aria-label="Open Haven AI assistant" type="button">
-      <Icon name="AutoAwesome" size="md" color="inverse" />
-      Haven
-    </button>
-  ) : !fabExpanded ? (
+  const fab = isHome ? null : !fabExpanded ? (
     <button
       className={styles.fabMinimized}
       onClick={() => setFabExpanded(true)}
@@ -325,6 +328,20 @@ export function HavenWindow({
     <>
     {memberChat}
     {fab}
+    {sukiOpen && !isHome && (
+      <SukiWindow
+        onClose={() => setSukiOpen(false)}
+        memberName={memberName}
+        memberId={memberId}
+        phone={phone}
+        pcp={pcp}
+        age={age}
+        gender={gender}
+        dob={dob}
+        havenLeft={posReady ? pos.left : window.innerWidth - defaultRight - defaultWidth}
+        havenTop={posReady ? pos.top : window.innerHeight - defaultBottom - defaultHeight}
+      />
+    )}
     <div ref={windowRef} className={styles.window} style={windowStyle} role="dialog" aria-label="Haven AI assistant" aria-modal="false">
       {/* Resize handles */}
       {!isMinimized && (
@@ -353,7 +370,7 @@ export function HavenWindow({
       {/* Window body */}
       {!isMinimized && (
         <div className={styles.body}>
-          {!isHome && <MemberHeader memberName={memberName} phone={phone} memberId={memberId} pcp={pcp} />}
+          {!isHome && <MemberHeader memberName={memberName} phone={phone} memberId={memberId} pcp={pcp} onSukiClick={() => setSukiOpen(true)} />}
 
           <div className={panelStyles.chatArea}>
             {/* Back button */}

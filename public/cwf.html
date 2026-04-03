@@ -4811,6 +4811,80 @@ function openScriptResponseModal() {
   // Initialize default member profile on page load
   populateProfile('jackson-thomas');
 
+  // ── Suki: open Add Note modal on the Notes tab ──
+  window._gcOpenSukiNote = function(noteText) {
+    // Activate Activity Record panel
+    document.querySelectorAll('.left-panel').forEach(function(p) { p.style.display = ''; p.classList.remove('active'); });
+    document.querySelectorAll('.gc-left-item').forEach(function(li) { li.classList.remove('active'); });
+    var arNav = document.querySelector('.gc-left-item[data-left="activity-record"]');
+    if (arNav) arNav.classList.add('active');
+    var arPanel = document.getElementById('panel-activity-record');
+    if (arPanel) arPanel.classList.add('active');
+
+    // Switch to Notes tab
+    document.querySelectorAll('#activityTabs .gc-tab').forEach(function(t) {
+      t.classList.remove('active'); t.style.color = ''; t.style.borderBottomColor = '';
+    });
+    document.querySelectorAll('.ar-tab-panel').forEach(function(p) { p.style.display = 'none'; p.classList.remove('active'); });
+    var notesTab = document.querySelector('#activityTabs .gc-tab[data-artab="notes"]');
+    if (notesTab) { notesTab.classList.add('active'); notesTab.style.color = 'var(--teal)'; notesTab.style.borderBottomColor = 'var(--teal)'; }
+    var notesPanel = document.getElementById('artab-notes');
+    if (notesPanel) { notesPanel.style.display = ''; notesPanel.classList.add('active'); }
+
+    // Pre-fill modal
+    var now = new Date();
+    var pad = function(n) { return String(n).padStart(2,'0'); };
+    var h = now.getHours(); var ampm = h < 12 ? 'AM' : 'PM';
+    var dateStr = pad(now.getMonth()+1)+'/'+pad(now.getDate())+'/'+now.getFullYear()+' '+pad(h)+':'+pad(now.getMinutes())+':'+pad(now.getSeconds())+' '+ampm;
+    var dateEl = document.getElementById('sukiNoteDate');
+    if (dateEl) dateEl.value = dateStr;
+    var memberEl = document.getElementById('sukiNoteMember');
+    if (memberEl) {
+      var m = memberData[currentMemberKey];
+      if (m) memberEl.textContent = m.name;
+    }
+    var textarea = document.getElementById('sukiNoteText');
+    if (textarea) textarea.value = noteText || '';
+    document.getElementById('addNoteModal').classList.add('open');
+  };
+
+  window.saveSukiNote = function() {
+    var noteType = document.getElementById('sukiNoteType').value;
+    var noteText = document.getElementById('sukiNoteText').value.trim();
+    var dateVal  = document.getElementById('sukiNoteDate').value;
+    if (!noteText) return;
+    var row = '<tr>' +
+      '<td><input type="checkbox" /></td>' +
+      '<td>' + noteType + '</td>' +
+      '<td>' + noteText.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</td>' +
+      '<td><span class="material-icons" style="font-size:14px;color:var(--teal);cursor:pointer;">visibility</span></td>' +
+      '<td>N/A</td><td>N/A</td>' +
+      '<td>Beatrice Kanya : All Access Admin</td>' +
+      '<td>' + dateVal + '</td>' +
+      '<td>N/A</td><td>N/A</td>' +
+      '</tr>';
+    if (!memberTabData[currentMemberKey].notes) memberTabData[currentMemberKey].notes = [];
+    memberTabData[currentMemberKey].notes.unshift(row);
+    var notesTbody = document.querySelector('#artab-notes .gc-table tbody');
+    if (notesTbody) notesTbody.innerHTML = memberTabData[currentMemberKey].notes.join('');
+    document.getElementById('addNoteModal').classList.remove('open');
+  };
+
+  // Listen for Suki note signal via postMessage (primary — from parent Haven React app)
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'SUKI_NOTE_READY' && window._gcOpenSukiNote) {
+      window._gcOpenSukiNote(e.data.noteText || '');
+    }
+  });
+
+  // Also listen via storage event (fallback for cross-tab on same origin)
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'suki-note-ready' && e.newValue && window._gcOpenSukiNote) {
+      localStorage.removeItem('suki-note-ready');
+      window._gcOpenSukiNote(e.newValue);
+    }
+  });
+
 })();
 </script>
 
@@ -5154,6 +5228,52 @@ function openScriptResponseModal() {
         <div class="hra-sidebar-title">Quick Links</div>
         <div class="hra-sidebar-body"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SUKI ADD NOTE MODAL ══════════════ -->
+<div class="gc-modal-overlay" id="addNoteModal" role="dialog" aria-modal="true" aria-labelledby="addNoteModalTitle">
+  <div class="gc-modal" style="max-width:680px;">
+    <div class="gc-modal-title">
+      <span id="addNoteModalTitle">Add Note</span>
+      <button onclick="document.getElementById('addNoteModal').classList.remove('open')" aria-label="Close">×</button>
+    </div>
+    <div class="gc-modal-accent"></div>
+    <div class="gc-modal-body">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <div class="gc-modal-field" style="flex:1;min-width:180px;">
+          <label>Note Type <span class="req">*</span></label>
+          <select class="gc-modal-select" id="sukiNoteType">
+            <option>Select</option>
+            <option selected>Activity</option>
+            <option>Clinical Note</option>
+            <option>Care Coordination Note</option>
+            <option>Telephonic Outreach Note</option>
+            <option>General</option>
+          </select>
+        </div>
+        <div class="gc-modal-field" style="flex:1;min-width:180px;">
+          <label>Date</label>
+          <input class="gc-modal-input" type="text" id="sukiNoteDate" readonly />
+        </div>
+      </div>
+      <div class="gc-modal-field">
+        <label>Member</label>
+        <div id="sukiNoteMember" style="font-size:13px;color:var(--text-secondary);padding:2px 0;"></div>
+      </div>
+      <div class="gc-modal-field">
+        <label>Created By</label>
+        <input class="gc-modal-input" type="text" value="Beatrice Kanya : All Access Admin" readonly />
+      </div>
+      <div class="gc-modal-field">
+        <label>Note <span class="req">*</span></label>
+        <textarea class="gc-modal-input" id="sukiNoteText" rows="8" style="height:180px;resize:vertical;padding:8px;line-height:1.55;"></textarea>
+      </div>
+    </div>
+    <div class="gc-modal-footer">
+      <button class="gc-btn gc-btn-primary" onclick="saveSukiNote()">Save</button>
+      <button class="gc-btn gc-btn-secondary" onclick="document.getElementById('addNoteModal').classList.remove('open')">Cancel</button>
     </div>
   </div>
 </div>

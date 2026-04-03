@@ -7,16 +7,17 @@ export interface MemberHeaderProps {
   phone: string
   memberId: string
   pcp: string
+  onSukiClick?: () => void
 }
 
-export function MemberHeader({ memberName, phone, memberId, pcp }: MemberHeaderProps) {
+export function MemberHeader({ memberName, phone, memberId, pcp, onSukiClick }: MemberHeaderProps) {
   return (
     <div className={styles.root}>
       {/* Row 1 — member name */}
       <div className={styles.nameRow}>
         <Icon name="Person" size="md" color="action" />
         <Typography variant="h6">{memberName}</Typography>
-        <button className={styles.sukiBtn} type="button" aria-label="Suki voice scribe">
+        <button className={styles.sukiBtn} type="button" aria-label="Launch Suki voice scribe" onClick={onSukiClick}>
           <img src={sukiIcon} width={28} height={28} alt="Suki" />
         </button>
       </div>
