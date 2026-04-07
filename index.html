@@ -443,7 +443,29 @@
       <div class="gc-tool"><div class="gc-tool-icon"><span class="material-icons">admin_panel_settings</span></div>Admin&#9662;</div>
       <div class="gc-tool"><div class="gc-tool-icon"><span class="material-icons">build</span></div>Config&#9662;</div>
       <div class="gc-tool"><div class="gc-tool-icon"><span class="material-icons">menu_book</span></div>Know&#9662;</div>
-      <div class="gc-tool" onclick="openManageModal()" style="cursor:pointer;"><div class="gc-tool-icon"><span class="material-icons">manage_accounts</span></div>Manage&#9662;</div>
+      <div class="gc-tool gc-tool-dropdown" onclick="var m=this.querySelector('.gc-tool-menu');var r=this.getBoundingClientRect();m.style.top=r.bottom+'px';m.style.right=(window.innerWidth-r.right)+'px';m.classList.toggle('open');event.stopPropagation();"><div class="gc-tool-icon"><span class="material-icons">manage_accounts</span></div>Manage&#9662;
+        <div class="gc-tool-menu">
+          <div class="gc-tool-menu-title">Manage</div>
+          <div class="gc-tool-menu-body">
+            <div class="gc-tool-menu-item">Assign Care Member &amp; Mailing</div>
+            <div class="gc-tool-menu-item">Member Merge</div>
+            <div class="gc-tool-menu-item">Assigned Activity Summary</div>
+            <div class="gc-tool-menu-item">My Activity Notification Summary</div>
+            <div class="gc-tool-menu-item">Bulk Referral</div>
+            <div class="gc-tool-menu-item">Pending Activities</div>
+            <div class="gc-tool-menu-item">Care Activity Log</div>
+            <div class="gc-tool-menu-item">Referral Request Summary</div>
+            <div class="gc-tool-menu-item">Full Dashboard</div>
+            <div class="gc-tool-menu-item">Worklog Manager</div>
+            <div class="gc-tool-menu-item">Manage Care Member</div>
+            <div class="gc-tool-menu-item">Eligibility Reconciliation</div>
+            <div class="gc-tool-menu-item">Manage EPSDT Features</div>
+            <div class="gc-tool-menu-item">Authorization Delivery Status</div>
+            <div class="gc-tool-menu-item">Manage Leave</div>
+            <div class="gc-tool-menu-item"></div>
+          </div>
+        </div>
+      </div>
       <div class="gc-tool"><div class="gc-tool-icon"><span class="material-icons">settings</span></div>Settings&#9662;</div>
       <div class="gc-tool"><div class="gc-tool-icon"><span class="material-icons">bar_chart</span></div>CareScribe</div>
     </div>
@@ -3415,76 +3437,6 @@ function cpSubTab(name) {
 // Set default active tab
 cpSubTab('overview');
 
-function openManageModal() {
-  var prior = document.getElementById('manageModalOverlay');
-  if (prior) { prior.remove(); return; }
-
-  var leftItems = [
-    'Assign Care Member & Mailing',
-    'Assigned Activity Summary',
-    'Bulk Referral',
-    'Care Activity Log',
-    'Full Dashboard',
-    'Manage Care Member',
-    'Manage EPSDT Features',
-    'Manage Leave',
-  ];
-  var rightItems = [
-    'Member Merge',
-    'My Activity Notification Summary',
-    'Pending Activities',
-    'Referral Request Summary',
-    'Worklog Manager',
-    'Eligibility Reconciliation',
-    'Authorization Delivery Status',
-  ];
-
-  var overlay = document.createElement('div');
-  overlay.id = 'manageModalOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding-top:60px;';
-
-  var box = document.createElement('div');
-  box.style.cssText = 'background:#fff;border-radius:12px;padding:32px 36px 36px;min-width:600px;max-width:780px;box-shadow:0 8px 40px rgba(0,0,0,0.18);';
-
-  var title = document.createElement('div');
-  title.textContent = 'Manage';
-  title.style.cssText = 'font-size:20px;font-weight:700;color:var(--teal,#0080A3);margin-bottom:24px;';
-  box.appendChild(title);
-
-  var grid = document.createElement('div');
-  grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid #e5e7eb;';
-
-  var maxRows = Math.max(leftItems.length, rightItems.length);
-  for (var i = 0; i < maxRows; i++) {
-    var makeCell = function(text) {
-      var td = document.createElement('div');
-      td.style.cssText = 'padding:16px 20px;border-bottom:1px solid #f0f0f0;font-size:15px;color:#374151;cursor:pointer;';
-      if (text) {
-        td.textContent = text;
-        td.addEventListener('mouseenter', function() { this.style.color = 'var(--teal,#0080A3)'; });
-        td.addEventListener('mouseleave', function() { this.style.color = '#374151'; });
-      }
-      return td;
-    };
-    grid.appendChild(makeCell(leftItems[i] || ''));
-    grid.appendChild(makeCell(rightItems[i] || ''));
-  }
-
-  // Divider between columns
-  grid.style.cssText += ';position:relative;';
-  var divider = document.createElement('div');
-  divider.style.cssText = 'position:absolute;top:0;bottom:0;left:50%;width:1px;background:#e5e7eb;';
-  grid.style.position = 'relative';
-  grid.appendChild(divider);
-
-  box.appendChild(grid);
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) overlay.remove();
-  });
-}
 
 function openScriptResponseModal(assessmentName) {
   // Remove any prior dynamic instance
