@@ -4226,61 +4226,6 @@ window._gcAllAssessmentQA = {
       });
 
 
-      // Add calendar review event 2 days from now
-      var reviewDate = new Date();
-      reviewDate.setDate(reviewDate.getDate() + 2);
-      var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      var dayAbbr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-      var rMM = String(reviewDate.getMonth()+1).padStart(2,'0');
-      var rDD = String(reviewDate.getDate()).padStart(2,'0');
-      var rDay = days[reviewDate.getDay()];
-      var rDayShort = dayAbbr[reviewDate.getDay()];
-      var rMonth = months[reviewDate.getMonth()];
-
-      // Update calendar header to review date
-      var calDateLabel = document.getElementById('calDateLabel');
-      if (calDateLabel) calDateLabel.textContent = rDay + ', ' + rMonth + ' ' + reviewDate.getDate() + ', ' + reviewDate.getFullYear();
-      var calDayColLabel = document.getElementById('calDayColLabel');
-      if (calDayColLabel) calDayColLabel.textContent = rDayShort + ' ' + rMM.replace(/^0/,'') + '/' + rDD.replace(/^0/,'');
-
-      var calSlot = document.getElementById('cal11Slot');
-      if (calSlot) {
-        var m = memberData[alertMemberKey];
-        var calName = m ? m.name : 'Member';
-        // Make the row taller for the card
-        calSlot.parentElement.style.minHeight = '120px';
-        var calCard = document.createElement('div');
-        calCard.className = 'cal-event-card';
-        calCard.dataset.dynamic = 'true';
-        calCard.style.borderLeftColor = '#2E7D32';
-        calCard.style.borderLeftWidth = '5px';
-        calCard.innerHTML = '<span class="cal-event-close material-icons" onclick="this.parentElement.remove();">close</span>' +
-          '<div class="cal-event-title">' +
-          '<img src="assets/Wellframe/Logomark.png" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;" />' +
-          '<span class="material-icons" style="font-size:15px;">info</span>' +
-          calName + ', ' + activityTypeVal + ' (Review)' +
-          '</div>' +
-          '<div class="cal-event-actions">' +
-          '<span class="material-icons">edit</span>' +
-          '<span class="material-icons cal-perform-btn" title="Perform Activity" style="cursor:pointer;">thumb_up</span>' +
-          '<span class="material-icons">delete</span>' +
-          '<span class="material-icons" style="color:#315E7B;border-color:#315E7B;">location_on</span>' +
-          '</div>';
-        calSlot.appendChild(calCard);
-        // Attach perform activity handler to thumbs up
-        var performBtn = calCard.querySelector('.cal-perform-btn');
-        if (performBtn) {
-          performBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            showCalActionPopover(this);
-          });
-        }
-        calCard.style.opacity = '0';
-        calCard.style.transform = 'translateY(-8px)';
-        calCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-        setTimeout(function() { calCard.style.opacity = '1'; calCard.style.transform = 'translateY(0)'; }, 50);
-      }
     }
   };
 
@@ -4682,12 +4627,6 @@ window._gcAllAssessmentQA = {
     var calBody = document.getElementById('dashCalBody');
     if (!calBody) return;
 
-    // Preserve any existing event cards before rebuilding
-    var savedCards = [];
-    calBody.querySelectorAll('.cal-event-card[data-dynamic]').forEach(function(c) {
-      savedCards.push(c.cloneNode(true));
-    });
-
     calBody.innerHTML = '';
     var curHour  = now.getHours();
     var curMin   = now.getMinutes();
@@ -4719,22 +4658,6 @@ window._gcAllAssessmentQA = {
       }
     }
 
-    // Re-insert saved event cards into current-hour slot
-    if (savedCards.length > 0) {
-      var target = curSlot || calBody.querySelector('.cal-day-col');
-      savedCards.forEach(function(card) {
-        if (target) {
-          // Re-attach perform-button handler on the cloned card
-          var pb = card.querySelector('.cal-perform-btn');
-          if (pb) pb.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.showCalActionPopover && window.showCalActionPopover(this);
-          });
-          target.parentElement.style.minHeight = '120px';
-          target.appendChild(card);
-        }
-      });
-    }
   }
   initCalendar();
   // Refresh every minute so the now-line stays accurate
@@ -5009,11 +4932,6 @@ window._gcAllAssessmentQA = {
       genTbody.insertBefore(gtr, genTbody.firstChild);
       setTimeout(function() { gtr.style.transition = 'background 2s'; gtr.style.background = ''; }, 200);
     }
-
-    // Remove the HRA calendar event card
-    document.querySelectorAll('.cal-event-card[data-dynamic="true"]').forEach(function(card) {
-      card.remove();
-    });
 
     // Remove the HRA alert row from My Alerts
     var dashAlerts = document.getElementById('dashAlertsTbody');
