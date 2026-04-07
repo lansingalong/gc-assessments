@@ -3900,11 +3900,13 @@ window._gcAllAssessmentQA = {
     if (calPage) calPage.style.display = '';
     document.querySelectorAll('.gc-tool-menu').forEach(function(m) { m.classList.remove('open'); });
   }
+  window.showCareActivityLog = showCareActivityLog;
 
   function calExpandAll(e) {
     e.preventDefault();
     document.querySelectorAll('#careActivityLogPage .gc-accordion').forEach(function(a) { a.classList.add('open'); });
   }
+  window.calExpandAll = calExpandAll;
 
   // Home shortcut toggles between dashboard and member view
   homeBtn.addEventListener('click', function() {
