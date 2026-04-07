@@ -1,12 +1,14 @@
 {
-  "name": "guidingcare-cwf",
+  "name": "guidingcare-haven",
   "version": "1.0.0",
-  "main": "index.ts",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "dev": "vite --port 8085",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist -r https://github.com/lcai_HEone/gc_haven.git"
   },
   "dependencies": {
     "@react-navigation/native": "^7.2.0",
@@ -21,8 +23,11 @@
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
-    "@types/react": "~19.2.2",
-    "typescript": "~5.9.2"
-  },
-  "private": true
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.1",
+    "gh-pages": "^6.3.0",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.2"
+  }
 }
