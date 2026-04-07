@@ -3870,6 +3870,7 @@ window._gcAllAssessmentQA = {
     if (e.key === 'wf_member_checklist') {
       syncOutstandingActivities();
       syncCompletedToActivitySummary();
+      syncCareActivityLog();
     }
   });
 
@@ -3894,11 +3895,55 @@ window._gcAllAssessmentQA = {
     memberView.style.display = '';
   }
 
+  function syncCareActivityLog() {
+    var tbody = document.getElementById('calTbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    var items = JSON.parse(localStorage.getItem('wf_member_checklist') || '[]');
+    var memberItems = items.filter(function(it) { return it.memberKey === currentMemberKey && it.status !== 'Completed'; });
+    var m = memberData[currentMemberKey] || {};
+    var nameParts = (m.name || '').split(' ');
+    var firstName = nameParts[0] || '';
+    var lastName = nameParts.slice(1).join(' ') || '';
+    var digital = m.digital || '';
+    var idMap = {'jackson-thomas':'GC00001','maria-rivera':'GC00002','robert-chen':'GC00003','sarah-williams':'GC00004'};
+    var shortId = idMap[currentMemberKey] || (m.id || 'N/A');
+    memberItems.forEach(function(item) {
+      var followUp = item.date || 'N/A';
+      var isPast = followUp !== 'N/A' && new Date(followUp) < new Date();
+      var dateStyle = isPast ? 'color:#C62828;font-weight:600;' : '';
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="checkbox"></td>' +
+        '<td><span class="gc-badge gc-badge-teal">Active</span></td>' +
+        '<td><a href="#" class="gc-kv-link">' + lastName + '</a></td>' +
+        '<td>' + firstName + '</td>' +
+        '<td>' + shortId + '</td>' +
+        '<td>' + item.assessment + '</td>' +
+        '<td>' + digital + '</td>' +
+        '<td style="' + dateStyle + '">' + followUp + '</td>' +
+        '<td>N/A</td>' +
+        '<td>' + (item.addedBy || 'Beatrice Kanya') + '</td>' +
+        '<td>N/A</td><td>N/A</td>' +
+        '<td>High</td><td>N/A</td><td>N/A</td>' +
+        '<td>' + item.assessment + '</td>' +
+        '<td style="text-align:center;"><span class="material-icons" style="font-size:18px;color:var(--teal);cursor:pointer;">thumb_up</span></td>';
+      tbody.appendChild(tr);
+    });
+    var countEl = document.getElementById('calItemCount');
+    if (countEl) {
+      var n = memberItems.length;
+      countEl.textContent = n === 0 ? '0 items' : '1 - ' + n + ' of ' + n + ' items';
+    }
+  }
+  window.syncCareActivityLog = syncCareActivityLog;
+
   function showCareActivityLog() {
     hideAllPages();
     var calPage = document.getElementById('careActivityLogPage');
     if (calPage) calPage.style.display = '';
     document.querySelectorAll('.gc-tool-menu').forEach(function(m) { m.classList.remove('open'); });
+    syncCareActivityLog();
   }
   window.showCareActivityLog = showCareActivityLog;
 
@@ -5801,103 +5846,7 @@ window._gcAllAssessmentQA = {
                 <th>Perform Activity</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><span class="gc-badge gc-badge-teal">Active</span></td>
-                <td><a href="#" class="gc-kv-link">Thomas</a></td>
-                <td>Jackson</td>
-                <td>MBR-2024-0847</td>
-                <td>Assessment- HRA</td>
-                <td></td>
-                <td style="color:#C62828;font-weight:600;">04/07/2026 12:35</td>
-                <td>N/A</td>
-                <td>Beatrice Kanya</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>High</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Health Risk Assessment</td>
-                <td style="text-align:center;"><span class="material-icons" style="font-size:18px;color:var(--teal);cursor:pointer;">thumb_up</span></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><span class="gc-badge gc-badge-teal">Active</span></td>
-                <td><a href="#" class="gc-kv-link">Rivera</a></td>
-                <td>Maria</td>
-                <td>GC00002</td>
-                <td>Comprehensive Assessment Review</td>
-                <td></td>
-                <td style="color:#C62828;font-weight:600;">04/01/2026 09:00</td>
-                <td>N/A</td>
-                <td>Beatrice Kanya</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>High</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Wellframe (Campaign)</td>
-                <td style="text-align:center;"><span class="material-icons" style="font-size:18px;color:var(--teal);cursor:pointer;">thumb_up</span></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><span class="gc-badge gc-badge-teal">Active</span></td>
-                <td><a href="#" class="gc-kv-link">Jackson</a></td>
-                <td>Thomas</td>
-                <td>GC00001</td>
-                <td>Follow Up</td>
-                <td></td>
-                <td style="color:#C62828;font-weight:600;">03/27/2026 07:59</td>
-                <td>N/A</td>
-                <td>Beatrice Kanya</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>High</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td style="text-align:center;"><span class="material-icons" style="font-size:18px;color:var(--teal);cursor:pointer;">thumb_up</span></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><span class="gc-badge gc-badge-teal">Active</span></td>
-                <td><a href="#" class="gc-kv-link">Rivera</a></td>
-                <td>Maria</td>
-                <td>GC00002</td>
-                <td>Assessments - Initial Outreach</td>
-                <td></td>
-                <td style="color:#C62828;font-weight:600;">03/20/2026 08:30</td>
-                <td>N/A</td>
-                <td>Beatrice Kanya</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Medium</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td style="text-align:center;"><span class="material-icons" style="font-size:18px;color:var(--teal);cursor:pointer;">thumb_up</span></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><span class="gc-badge gc-badge-teal">Active</span></td>
-                <td><a href="#" class="gc-kv-link">Jackson</a></td>
-                <td>Thomas</td>
-                <td>GC00001</td>
-                <td>CHF Weight Monitoring Check-In</td>
-                <td></td>
-                <td style="color:#C62828;font-weight:600;">03/25/2026 09:00</td>
-                <td>N/A</td>
-                <td>Beatrice Kanya</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>High</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td style="text-align:center;"><span class="material-icons" style="font-size:18px;color:var(--teal);cursor:pointer;">thumb_up</span></td>
-              </tr>
-            </tbody>
+            <tbody id="calTbody"></tbody>
           </table>
         </div>
 
@@ -5913,7 +5862,7 @@ window._gcAllAssessmentQA = {
             <span style="font-size:11px;color:var(--text-secondary);">items per page</span>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:11px;color:var(--text-secondary);">1 - 5 of 5 items</span>
+            <span id="calItemCount" style="font-size:11px;color:var(--text-secondary);">0 items</span>
             <span class="material-icons" style="font-size:14px;color:var(--text-muted);cursor:pointer;">refresh</span>
           </div>
         </div>
