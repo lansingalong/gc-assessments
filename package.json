@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -r https://github.com/lcai_HEone/gc_haven.git"
+    "deploy": "gh-pages -d dist -r https://github.com/lansingalong/gc-cwf-activity.git"
   },
   "dependencies": {
     "@react-navigation/native": "^7.2.0",

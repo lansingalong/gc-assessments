@@ -3767,12 +3767,33 @@ function openScriptResponseModal() {
   // Start with dashboard visible (default)
   // Show success banner after adding activity
   // Open Add Activity modal with current member
+  window.updateWellframeSection = function() {
+    var actType = document.getElementById('modalActivityType');
+    var script  = document.getElementById('modalScript');
+    var section = document.getElementById('wellframeAssessmentSection');
+    if (!actType || !script || !section) return;
+    var isAssessment = actType.value !== 'Select' && actType.value.toLowerCase().indexOf('assessment') > -1;
+    var hasScript    = script.value !== 'Select' && script.value !== '';
+    var show = isAssessment && hasScript;
+    section.style.display = show ? '' : 'none';
+    if (!show) {
+      var chk = document.getElementById('wellframeAssessmentCheck');
+      if (chk) chk.checked = false;
+    }
+  };
+
   window.openAddActivity = function() {
     var m = memberData[currentMemberKey];
     if (m) {
       var modalName = document.getElementById('modalMemberName');
       if (modalName) modalName.textContent = m.name;
     }
+    // Reset activity type, script, and wellframe section on each open
+    var actType = document.getElementById('modalActivityType');
+    var script  = document.getElementById('modalScript');
+    if (actType) actType.value = 'Select';
+    if (script)  script.value  = 'Select';
+    window.updateWellframeSection();
     // Force close all open menus with a slight delay to override toggle
     setTimeout(function() {
       document.querySelectorAll('.gc-tool-menu').forEach(function(m) { m.classList.remove('open'); });
@@ -4943,10 +4964,10 @@ function openScriptResponseModal() {
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;">
         <div class="gc-modal-field">
           <label><span class="req">*</span>Activity Type</label>
-          <select class="gc-modal-select">
+          <select class="gc-modal-select" id="modalActivityType" onchange="updateWellframeSection()">
             <option>Select</option>
             <option>Health Risk Assessment</option>
             <option>Maternal Health Assessment</option>
@@ -4962,7 +4983,7 @@ function openScriptResponseModal() {
         </div>
         <div class="gc-modal-field">
           <label>Script</label>
-          <select class="gc-modal-select">
+          <select class="gc-modal-select" id="modalScript" onchange="updateWellframeSection()">
             <option>Select</option>
             <option>HRA General Health Outreach</option>
             <option>Maternal Health Prenatal Check-In</option>
@@ -4988,38 +5009,47 @@ function openScriptResponseModal() {
             <option>6th — Routine</option>
           </select>
         </div>
+        <div class="gc-modal-field">
+          <label><span class="req">*</span>Contact Type</label>
+          <select class="gc-modal-select">
+            <option>Member - Phone</option>
+            <option>Member - Face to Face</option>
+            <option>Member - Telehealth</option>
+            <option>Member - Email</option>
+            <option>Member - Letter</option>
+            <option>Member - Fax</option>
+            <option>Member - Self Assessment</option>
+            <option>Member - Community Referral</option>
+            <option>Member - Referral</option>
+            <option>Phone to Member</option>
+            <option>Wellframe Outreach</option>
+            <option>Wellframe Digital Campaign</option>
+            <option>Caregiver - Phone</option>
+            <option>Caregiver - Face to Face</option>
+            <option>Caregiver - Email</option>
+            <option>Caregiver - Telehealth</option>
+            <option>Caregiver - Letter</option>
+            <option>Caregiver - Fax</option>
+            <option>Provider - Phone</option>
+            <option>Provider - Face to Face</option>
+            <option>Provider - Email</option>
+            <option>Provider - Telehealth</option>
+            <option>Provider - Letter</option>
+            <option>Provider - Fax</option>
+            <option>TPA - Home</option>
+            <option>TPA - Mobile</option>
+          </select>
+        </div>
       </div>
 
-      <div class="gc-modal-field" style="max-width:240px;">
-        <label><span class="req">*</span>Contact Type</label>
-        <select class="gc-modal-select">
-          <option>Member - Phone</option>
-          <option>Member - Face to Face</option>
-          <option>Member - Telehealth</option>
-          <option>Member - Email</option>
-          <option>Member - Letter</option>
-          <option>Member - Fax</option>
-          <option>Member - Self Assessment</option>
-          <option>Member - Community Referral</option>
-          <option>Member - Referral</option>
-          <option>Phone to Member</option>
-          <option>Wellframe Outreach</option>
-          <option>Wellframe Digital Campaign</option>
-          <option>Caregiver - Phone</option>
-          <option>Caregiver - Face to Face</option>
-          <option>Caregiver - Email</option>
-          <option>Caregiver - Telehealth</option>
-          <option>Caregiver - Letter</option>
-          <option>Caregiver - Fax</option>
-          <option>Provider - Phone</option>
-          <option>Provider - Face to Face</option>
-          <option>Provider - Email</option>
-          <option>Provider - Telehealth</option>
-          <option>Provider - Letter</option>
-          <option>Provider - Fax</option>
-          <option>TPA - Home</option>
-          <option>TPA - Mobile</option>
-        </select>
+      <div id="wellframeAssessmentSection" style="display:none;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer;">
+          <input type="checkbox" id="wellframeAssessmentCheck" style="accent-color:var(--teal);width:15px;height:15px;" />
+          Wellframe Assessment
+        </label>
+        <p style="font-size:11px;color:#666;margin-top:5px;margin-left:23px;line-height:1.5;">
+          Send assessment to member via Wellframe digital platform for self-completion.
+        </p>
       </div>
 
       <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:end;">
