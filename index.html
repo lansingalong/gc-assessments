@@ -3519,7 +3519,7 @@ function openScriptResponseModal(assessmentName) {
       '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+(r.sub||'')+'</td>' +
       '<td style="padding:5px 9px;border:1px solid #e0e0e0;text-align:right;">'+(r.score>0?r.score.toFixed(2):'0')+'</td>' +
       '<td style="padding:5px 9px;border:1px solid #e0e0e0;">N/A</td>' +
-      '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+completedBy+'</td>' +
+      '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+(m.name||'')+'</td>' +
       '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+ts+'</td>' +
       '</tr>';
   });
@@ -3577,7 +3577,7 @@ function openScriptResponseModal(assessmentName) {
             '<th '+TH+'>Sub Option</th>' +
             '<th '+TH+'>Script Score</th>' +
             '<th '+TH+'>Care Notes</th>' +
-            '<th '+TH+'>Staff Name</th>' +
+            '<th '+TH+'>Answered by</th>' +
             '<th '+TH+'>Date Entered</th>' +
           '</tr></thead>' +
           '<tbody>'+rowsHtml+'</tbody>' +
@@ -5014,6 +5014,21 @@ window._gcAllAssessmentQA = {
   populateProfile('jackson-thomas');
 
 })();
+
+function updateWellframeSection() {
+  var actType = document.getElementById('activityTypeSelect');
+  var script = document.getElementById('scriptSelect');
+  var section = document.getElementById('wellframeSection');
+  if (!actType || !script || !section) return;
+  var show = actType.value === 'Assessment' && script.value !== 'Select';
+  section.style.display = show ? 'block' : 'none';
+  if (!show) {
+    var cb = document.getElementById('displayForMemberToggle');
+    var note = document.getElementById('wellframeNote');
+    if (cb) cb.checked = false;
+    if (note) note.style.display = 'none';
+  }
+}
 </script>
 
 <!-- ══════════════ ADD ACTIVITY MODAL ══════════════ -->
@@ -5064,10 +5079,10 @@ window._gcAllAssessmentQA = {
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <div class="gc-modal-field">
           <label><span class="req">*</span>Activity Type</label>
-          <select id="activityTypeSelect" class="gc-modal-select" onchange="(function(v){var lbl=document.getElementById('scriptLabel');var req=document.getElementById('scriptReq');if(v==='Assessment'){req.style.display='inline';lbl.style.fontWeight='700';}else{req.style.display='none';lbl.style.fontWeight='';};})(this.value)">
+          <select id="activityTypeSelect" class="gc-modal-select" onchange="updateWellframeSection()">
             <option>Select</option>
             <option>Assessment</option>
             <option>Call Member</option>
@@ -5078,8 +5093,8 @@ window._gcAllAssessmentQA = {
           </select>
         </div>
         <div class="gc-modal-field">
-          <label id="scriptLabel">Script <span id="scriptReq" class="req" style="display:none;">*</span></label>
-          <select id="scriptSelect" class="gc-modal-select">
+          <label>Script</label>
+          <select id="scriptSelect" class="gc-modal-select" onchange="updateWellframeSection()">
             <option>Select</option>
             <option>Health Risk Assessment</option>
             <option>Comprehensive Assessment</option>
@@ -5093,9 +5108,20 @@ window._gcAllAssessmentQA = {
             <option>Transitions of Care (TOC) 3 Home Visit</option>
           </select>
         </div>
+      </div>
+
+      <div id="wellframeSection" style="display:none;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer;user-select:none;">
+          <input type="checkbox" id="displayForMemberToggle" style="accent-color:var(--teal);width:15px;height:15px;" onchange="document.getElementById('wellframeNote').style.display=this.checked?'block':'none';" />
+          Wellframe Assessment
+        </label>
+        <div id="wellframeNote" style="display:none;font-size:12px;color:#555;background:#fff;border-left:3px solid var(--teal);padding:7px 10px;border-radius:2px;margin-top:4px;"><strong>Note:</strong> Checking this will send the assessment to the member's Wellframe account and appear on the member's checklist.</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <div class="gc-modal-field">
           <label><span class="req">*</span>Contact Type</label>
-          <select class="gc-modal-select" onchange="(function(v){var cb=document.getElementById('displayForMemberToggle');var note=document.getElementById('wellframeNote');var isWf=v==='Wellframe Assessment';cb.checked=isWf;note.style.display=isWf?'block':'none';})(this.value)">
+          <select class="gc-modal-select">
             <option>Member - Phone</option>
             <option>Member - Face to Face</option>
             <option>Member - Telehealth</option>
@@ -5107,7 +5133,6 @@ window._gcAllAssessmentQA = {
             <option>Member - Referral</option>
             <option>Phone to Member</option>
             <option>Wellframe Outreach</option>
-            <option>Wellframe Assessment</option>
             <option>Caregiver - Phone</option>
             <option>Caregiver - Face to Face</option>
             <option>Caregiver - Email</option>
@@ -5124,25 +5149,18 @@ window._gcAllAssessmentQA = {
             <option>TPA - Mobile</option>
           </select>
         </div>
-      </div>
-
-      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer;user-select:none;">
-        <input type="checkbox" id="displayForMemberToggle" style="accent-color:var(--teal);width:15px;height:15px;" onchange="document.getElementById('wellframeNote').style.display=this.checked?'block':'none';" />
-        Wellframe Assessment
-      </label>
-      <div id="wellframeNote" style="display:none;font-size:12px;color:#555;background:#fff;border-left:3px solid var(--teal);padding:7px 10px;border-radius:2px;margin-top:4px;"><strong>Note:</strong> Checking this will send the assessment to the member's Wellframe account and appear on the member's checklist.</div>
-
-      <div class="gc-modal-field" style="max-width:240px;">
-        <label>Priority</label>
-        <select class="gc-modal-select">
-          <option>Select</option>
-          <option>1st — Urgent</option>
-          <option>2nd — High</option>
-          <option>3rd — Medium</option>
-          <option>4th — Standard</option>
-          <option>5th — Low</option>
-          <option>6th — Routine</option>
-        </select>
+        <div class="gc-modal-field">
+          <label>Priority</label>
+          <select class="gc-modal-select">
+            <option>Select</option>
+            <option>1st — Urgent</option>
+            <option>2nd — High</option>
+            <option>3rd — Medium</option>
+            <option>4th — Standard</option>
+            <option>5th — Low</option>
+            <option>6th — Routine</option>
+          </select>
+        </div>
       </div>
 
       <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:end;">
@@ -5867,7 +5885,7 @@ window._gcAllAssessmentQA = {
           <th>Sub Option</th>
           <th>Script Score</th>
           <th>Care Notes</th>
-          <th>Staff Name</th>
+          <th>Answered by</th>
           <th>Date Entered</th>
         </tr></thead>
         <tbody id="msriTbody"></tbody>
