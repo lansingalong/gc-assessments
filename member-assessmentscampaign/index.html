@@ -14,16 +14,10 @@
     <div id="root"><p style="padding:20px;color:#333;font-family:sans-serif;">Loading app… if this message stays, check browser console for errors.</p></div>
     <script>
       window.addEventListener('error', function(e) {
-        var d = document.getElementById('root');
-        if (d && !d.hasChildNodes()) {
-          d.innerHTML = '<div style="padding:20px;font-family:monospace;color:red;font-size:12px;background:#fff2f2;border:1px solid red;margin:20px;border-radius:4px"><strong>JS Error:</strong><br>' + (e.message||'unknown') + '<br>' + (e.filename||'') + ':' + (e.lineno||'') + '</div>';
-        }
+        document.body.insertAdjacentHTML('afterbegin', '<div style="position:fixed;top:0;left:0;right:0;padding:12px 20px;font-family:monospace;color:#fff;font-size:12px;background:#c00;z-index:99999"><strong>JS Error:</strong> ' + (e.message||'unknown') + ' @ ' + (e.filename||'') + ':' + (e.lineno||'') + '</div>');
       });
       window.addEventListener('unhandledrejection', function(e) {
-        var d = document.getElementById('root');
-        if (d && !d.hasChildNodes()) {
-          d.innerHTML = '<div style="padding:20px;font-family:monospace;color:red;font-size:12px;background:#fff2f2;border:1px solid red;margin:20px;border-radius:4px"><strong>Unhandled Promise:</strong><br>' + String(e.reason) + '</div>';
-        }
+        document.body.insertAdjacentHTML('afterbegin', '<div style="position:fixed;top:0;left:0;right:0;padding:12px 20px;font-family:monospace;color:#fff;font-size:12px;background:#c00;z-index:99999"><strong>Unhandled:</strong> ' + String(e.reason) + '</div>');
       });
     </script>
   </body>
