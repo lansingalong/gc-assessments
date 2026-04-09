@@ -3474,6 +3474,14 @@ function openScriptResponseModal(assessmentName) {
         qa = completedData.qa;
       }
     }
+    // Check member-specific completed QA (saved by member-cwfassessments for jackson-thomas)
+    if (!qa) {
+      var rawMemberCompleted = localStorage.getItem('assessment-completed-qa-' + key);
+      var memberCompletedData = rawMemberCompleted ? JSON.parse(rawMemberCompleted) : null;
+      if (memberCompletedData && memberCompletedData.assessmentType === scriptName && Array.isArray(memberCompletedData.qa) && memberCompletedData.qa.length > 0) {
+        qa = memberCompletedData.qa;
+      }
+    }
   } catch(_) {}
   if (!qa) {
     qa = (window._gcAllAssessmentQA && window._gcAllAssessmentQA[scriptName])
