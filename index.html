@@ -3859,18 +3859,26 @@ window._gcAllAssessmentQA = {
   window.addEventListener('storage', function(e) {
     if (e.key === 'wf_member_checklist') {
       // Route maria-rivera entries through memberTabData handlers (not DOM sync)
+      var shouldNavigate = false;
       try {
         var cwfOldItems = JSON.parse(e.oldValue || '[]');
         var cwfNewItems = JSON.parse(e.newValue || '[]');
         cwfNewItems.forEach(function(item) {
-          if (item.memberKey !== 'maria-rivera') return;
-          var oldItem = cwfOldItems.find(function(o) { return o.memberKey === 'maria-rivera' && o.assessment === item.assessment; });
-          var prevStatus = oldItem ? oldItem.status : null;
-          if (prevStatus !== item.status) {
-            if (item.status === 'In Progress') {
-              handleMemberAssessmentSaved(item.assessment);
-            } else if (item.status === 'Completed') {
-              handleMemberAssessmentCompleted(item.assessment);
+          if (item.memberKey === 'maria-rivera') {
+            var oldItem = cwfOldItems.find(function(o) { return o.memberKey === 'maria-rivera' && o.assessment === item.assessment; });
+            var prevStatus = oldItem ? oldItem.status : null;
+            if (prevStatus !== item.status) {
+              if (item.status === 'In Progress') {
+                handleMemberAssessmentSaved(item.assessment);
+              } else if (item.status === 'Completed') {
+                handleMemberAssessmentCompleted(item.assessment);
+              }
+            }
+          } else if (item.memberKey === currentMemberKey) {
+            var oldItem2 = cwfOldItems.find(function(o) { return o.memberKey === item.memberKey && o.assessment === item.assessment; });
+            var prevStatus2 = oldItem2 ? oldItem2.status : null;
+            if (prevStatus2 !== item.status && (item.status === 'In Progress' || item.status === 'Completed')) {
+              shouldNavigate = true;
             }
           }
         });
@@ -3879,6 +3887,7 @@ window._gcAllAssessmentQA = {
       syncOutstandingActivities();
       syncCompletedToActivitySummary();
       syncCareActivityLog();
+      if (shouldNavigate) goToActivitySummary();
     }
   });
 
