@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GuidingCare - Member Profile</title>
+<link rel="icon" type="image/png" href="assets/_Custom/Wordmark.png">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
@@ -3464,8 +3465,33 @@ function openScriptResponseModal() {
 
   var key = (window._gcGetKey ? window._gcGetKey() : null) || 'jackson-thomas';
   var md = window._gcMemberData || {};
-  var qa = (window._gcHraQA && window._gcHraQA.length > 0) ? window._gcHraQA : FALLBACK_QA;
   var m = md[key] || md['jackson-thomas'] || FALLBACK_MEMBER;
+
+  // Derive the member app's localStorage key from the member's name and DOB
+  var nameParts = (m.name || '').toLowerCase().split(' ');
+  var memberStorageKey = 'wf_assessment_' + nameParts[0] + '_' + (nameParts[1] || '') + '_' + (m.dob || '');
+
+  // Read member's actual assessment answers: completed > partial save > in-progress
+  var qa = FALLBACK_QA;
+  (function() {
+    var sources = [
+      'assessment-completed-qa-' + memberStorageKey,
+      'assessment-partial-qa-' + memberStorageKey,
+      'assessment-live-qa-' + memberStorageKey
+    ];
+    for (var i = 0; i < sources.length; i++) {
+      try {
+        var raw = localStorage.getItem(sources[i]);
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.qa) && parsed.qa.length > 0) {
+            qa = parsed.qa;
+            return;
+          }
+        }
+      } catch(_) {}
+    }
+  })();
 
   var now = new Date();
   var pad = function(n) { return String(n).padStart(2,'0'); };

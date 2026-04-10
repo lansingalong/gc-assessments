@@ -1872,7 +1872,7 @@
               <div style="padding:7px 12px 4px;font-size:12px;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:4px;border-bottom:3px solid #E07820;white-space:nowrap;"><span class="material-icons" style="font-size:14px;">table_chart</span> Care Plan Details</div>
             </div>
           </div>
-          <div style="background:var(--white);min-height:300px;"></div>
+          <div id="cp-ogi-list" style="background:var(--white);min-height:300px;"></div>
         </div>
 
         <!-- SUB-PANEL: Care Plan Barriers -->
@@ -3466,6 +3466,22 @@ function openScriptResponseModal(assessmentName) {
         qa = partialData.qa;
       }
     }
+    // Check completed QA (saved when member fully submits the assessment)
+    if (!qa) {
+      var rawCompleted = localStorage.getItem('assessment-completed-qa');
+      var completedData = rawCompleted ? JSON.parse(rawCompleted) : null;
+      if (completedData && completedData.assessmentType === scriptName && Array.isArray(completedData.qa) && completedData.qa.length > 0) {
+        qa = completedData.qa;
+      }
+    }
+    // Check member-specific completed QA (saved by member-cwfassessments for jackson-thomas)
+    if (!qa) {
+      var rawMemberCompleted = localStorage.getItem('assessment-completed-qa-' + key);
+      var memberCompletedData = rawMemberCompleted ? JSON.parse(rawMemberCompleted) : null;
+      if (memberCompletedData && memberCompletedData.assessmentType === scriptName && Array.isArray(memberCompletedData.qa) && memberCompletedData.qa.length > 0) {
+        qa = memberCompletedData.qa;
+      }
+    }
   } catch(_) {}
   if (!qa) {
     qa = (window._gcAllAssessmentQA && window._gcAllAssessmentQA[scriptName])
@@ -3880,6 +3896,17 @@ window._gcAllAssessmentQA = {
             if (prevStatus2 !== item.status && (item.status === 'In Progress' || item.status === 'Completed')) {
               shouldNavigate = true;
             }
+            if (prevStatus2 !== item.status && item.status === 'Completed') {
+              var dCwf = memberTabData[item.memberKey];
+              if (dCwf) {
+                if (!dCwf.carePlanOGI) dCwf.carePlanOGI = [];
+                var alrOGI = dCwf.carePlanOGI.some(function(o) { return o.assessmentType === item.assessment; });
+                if (!alrOGI) {
+                  var tplCwf = _OGI_TEMPLATES[item.assessment] || { opportunity: 'Potential need identified via ' + item.assessment, goal: 'Member has a plan to address needs identified during ' + item.assessment, condition: 'General', intervention: 'Follow up on ' + item.assessment + ' results and connect member with appropriate resources', priority: 'High' };
+                  dCwf.carePlanOGI.push({ assessmentType: item.assessment, opportunity: tplCwf.opportunity, goal: tplCwf.goal, condition: tplCwf.condition, intervention: tplCwf.intervention, priority: tplCwf.priority });
+                }
+              }
+            }
           }
         });
       } catch(_) {}
@@ -4018,6 +4045,7 @@ window._gcAllAssessmentQA = {
       leftPanels.forEach(function(p) { p.classList.remove('active'); });
       var panel = document.getElementById('panel-' + target);
       if (panel) panel.classList.add('active');
+      if (target === 'care-plan') renderCarePlanOGI(currentMemberKey);
     });
   });
 
@@ -4295,6 +4323,7 @@ window._gcAllAssessmentQA = {
         _gs('04/08/2026','Priya Nandakumar, CCM','Follow-Up Call')
       ],
       outstandingActivities: [],
+      carePlanOGI: [],
       memberAlerts: [
         _ar('gc-badge-danger','New','Gap in Care — HbA1c test overdue','HEDIS measure CDC: Member has not completed HbA1c testing within the past 6 months. Last recorded A1C was 8.4% on 09/18/2025. Outreach required to schedule lab work.','03/22/2026'),
         _ar('gc-badge-danger','Active','Readmission Risk — ED visit within 30 days','Member had ED visit on 03/05/2026 for chest pain (R/O ACS). LACE index score of 11 indicates high readmission risk. Transition of care follow-up required within 48 hours of discharge.','03/06/2026'),
@@ -4306,6 +4335,7 @@ window._gcAllAssessmentQA = {
       notes: [],
       scriptActivity: [],
       generalActivity: [],
+      carePlanOGI: [],
       outstandingActivities: [
         '<tr><td><input type="checkbox"/></td><td>Assessment</td><td>SMS/Email</td><td>High</td><td>04/09/2026</td><td>N/A</td><td>08:00</td><td><a href="#" onclick="event.preventDefault();window.open(_ASSESSMENT_CAMPAIGN_URL,\'assessment-window\');" style="color:var(--link);">Health Risk Assessment</a></td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">04/09/2026 08:00:00</td><td style="white-space:nowrap;">' + _ACT + '</td></tr>'
       ],
@@ -4836,6 +4866,138 @@ window._gcAllAssessmentQA = {
     document.getElementById('outcomeModal').classList.add('open');
   };
 
+  var _OGI_TEMPLATES = {
+    'Health Risk Assessment': {
+      opportunity: 'Member identified with multiple modifiable health risk factors following completion of Health Risk Assessment, including potential gaps in preventive care, social determinants of health needs, and chronic disease self-management barriers',
+      goal: 'Member will engage with care team to address identified health risk factors, improve chronic disease management, and reduce gaps in preventive care within the next 12 months',
+      condition: 'General Health',
+      intervention: 'Care Manager will review HRA results with member and care team, prioritize identified risk factors, develop individualized action steps, and coordinate referrals to appropriate disease management programs, community support services, and preventive care appointments',
+      priority: 'High',
+      scriptName: 'Health Risk Assessment'
+    },
+    'Diabetes Management Assessment': {
+      opportunity: 'Member with Type 2 Diabetes presents with suboptimal glycemic control and identified barriers to self-management, including medication adherence gaps and limited access to diabetes education resources',
+      goal: 'Member will achieve improved glycemic control (A1C < 8%) and demonstrate consistent self-management behaviors within 6 months',
+      condition: 'Type 2 Diabetes Mellitus',
+      intervention: 'Care Manager will educate member on diabetes self-management strategies, coordinate referral to diabetes education program (DSMES), review medication adherence barriers, and facilitate communication between member and PCP regarding treatment plan adjustments',
+      priority: 'High',
+      scriptName: 'Diabetes Management Assessment'
+    }
+  };
+
+  function _buildOGICard(ogi, idx) {
+    var pri = ogi.priority || 'High';
+    var uid = 'ogi-info-' + (idx || 0);
+    var now = new Date();
+    var pad2 = function(n) { return String(n).padStart(2,'0'); };
+    var startDate = pad2(now.getMonth()+1)+'/'+pad2(now.getDate())+'/'+now.getFullYear();
+    var tgt = new Date(now); tgt.setMonth(tgt.getMonth()+6);
+    var targetDate = pad2(tgt.getMonth()+1)+'/'+pad2(tgt.getDate())+'/'+tgt.getFullYear();
+    var md = window._gcMemberData || {};
+    var key = (window._gcGetKey ? window._gcGetKey() : null) || 'maria-rivera';
+    var m = md[key] || {};
+    var createdBy = (m.careManager || 'Beatrice Kanya');
+    var scriptName = ogi.scriptName || ogi.assessmentType || 'Health Risk Assessment';
+
+    return '<div style="border:1px solid var(--border-light);border-radius:var(--r-sm);margin:12px 16px;overflow:hidden;">' +
+      '<div style="display:flex;align-items:stretch;padding:14px 16px;border-bottom:1px solid var(--border-light);gap:0;">' +
+        '<div style="display:flex;align-items:flex-start;gap:10px;flex:0 0 38%;padding-right:20px;">' +
+          '<div style="background:#E07820;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">' +
+            '<span class="material-icons" style="font-size:18px;">gps_fixed</span>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Opportunity</div>' +
+            '<div style="font-size:12px;color:var(--text-secondary);">' + ogi.opportunity + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="flex:1;padding:0 20px;border-left:1px solid var(--border-light);">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Goal</div>' +
+          '<div style="font-size:12px;color:var(--text-secondary);">' + ogi.goal + '</div>' +
+        '</div>' +
+        '<div style="flex:0 0 130px;padding-left:20px;border-left:1px solid var(--border-light);">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:2px;">Condition</div>' +
+          '<div style="font-size:12px;color:var(--text-secondary);">' + ogi.condition + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:16px;padding:8px 16px 4px;background:#fafbfc;">' +
+        '<label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-primary);cursor:pointer;"><input type="checkbox" style="accent-color:var(--teal);" /> Select</label>' +
+        '<div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary);">Eligibility <span style="display:inline-flex;align-items:center;gap:3px;color:#2E7D32;font-weight:600;"><span class="material-icons" style="font-size:14px;">check_circle</span>Active</span></div>' +
+        '<div style="display:flex;align-items:center;gap:5px;font-size:12px;color:#E07820;font-weight:600;"><span class="material-icons" style="font-size:16px;">bookmark</span>Recommended</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);margin-left:auto;">Priority <a href="#" style="color:var(--link);font-weight:600;text-decoration:none;">' + pri + '</a><span class="material-icons" style="font-size:14px;">arrow_drop_down</span></div>' +
+        '<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;border:1px solid var(--border);border-radius:var(--r-sm);padding:3px 10px;"><input type="checkbox" style="accent-color:var(--teal);" /> Sign Off</label>' +
+      '</div>' +
+      '<div style="padding:4px 16px 12px 16px;">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Intervention</div>' +
+        '<div style="font-size:12px;color:var(--text-secondary);">' + ogi.intervention + '</div>' +
+      '</div>' +
+      '<div style="border-top:1px solid var(--border-light);">' +
+        '<div style="padding:8px 16px;">' +
+          '<a href="#" style="color:var(--link);display:inline-flex;align-items:center;gap:4px;font-size:12px;text-decoration:none;" onclick="event.preventDefault();(function(el){var d=document.getElementById(\'' + uid + '\');if(d){d.style.display=d.style.display===\'none\'?\'block\':\'none\';el.querySelector(\'span.material-icons\').textContent=d.style.display===\'none\'?\'help_outline\':\'expand_less\';}})(this)">' +
+            '<span class="material-icons" style="font-size:15px;">help_outline</span>Additional Information' +
+          '</a>' +
+        '</div>' +
+        '<div id="' + uid + '" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border-light);">' +
+          '<div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr;gap:14px 12px;padding:14px 0 10px;">' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Status</div><div style="font-size:12px;color:var(--text-secondary);">New</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Member Plan</div><div style="font-size:12px;color:var(--text-secondary);">' + ogi.intervention + '</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Start Date</div><div style="font-size:12px;color:var(--text-secondary);">' + startDate + '</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Target Date</div><div style="font-size:12px;color:var(--text-secondary);">' + targetDate + '</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Sign off Date</div><div style="font-size:12px;color:var(--text-secondary);">N/A</div></div>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr 1fr 1fr;gap:14px 12px;padding:10px 0;border-top:1px solid var(--border-light);">' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Opportunity Resolved Date</div><div style="font-size:12px;color:var(--text-secondary);">N/A</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Add Appointment</div><div style="font-size:12px;"><a href="#" style="color:var(--link);" onclick="event.preventDefault()">Add</a></div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Targeted To</div><div style="font-size:12px;color:var(--text-secondary);">N/A</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Script Name</div><div style="font-size:12px;color:var(--text-secondary);">' + scriptName + '</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Roles</div><div style="font-size:12px;color:var(--text-secondary);">All Access Admin</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Term</div><div style="font-size:12px;"><a href="#" style="color:var(--link);" onclick="event.preventDefault()">Long</a></div></div>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:14px 12px;padding:10px 0;border-top:1px solid var(--border-light);">' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Assigned Owner</div><div style="font-size:12px;color:var(--text-secondary);">N/A</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Source</div><div style="font-size:12px;color:var(--text-secondary);">Script</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Created On</div><div style="font-size:12px;color:var(--text-secondary);">' + startDate + '</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Created By</div><div style="font-size:12px;color:var(--text-secondary);">' + createdBy + '</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Updated On</div><div style="font-size:12px;color:var(--text-secondary);">N/A</div></div>' +
+            '<div><div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Updated By</div><div style="font-size:12px;color:var(--text-secondary);">N/A</div></div>' +
+          '</div>' +
+          '<div style="padding:10px 0;border-top:1px solid var(--border-light);">' +
+            '<div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Guideline Source</div>' +
+            '<div style="font-size:12px;color:var(--text-secondary);">N/A</div>' +
+          '</div>' +
+          '<div style="padding:10px 0;border-top:1px solid var(--border-light);">' +
+            '<div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">Payor</div>' +
+            '<div style="font-size:12px;color:var(--text-secondary);">Program Enrollment &gt;&gt; Enrollment</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderCarePlanOGI(key) {
+    var container = document.getElementById('cp-ogi-list');
+    if (!container) return;
+    var d = memberTabData[key];
+    if (!d || !d.carePlanOGI || d.carePlanOGI.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+    var html = d.carePlanOGI.map(_buildOGICard).join('');
+    var count = d.carePlanOGI.length;
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-top:1px solid var(--border-light);font-size:12px;color:var(--text-secondary);">' +
+      '<div style="display:flex;align-items:center;gap:6px;">' +
+        '<span class="material-icons" style="font-size:16px;color:var(--text-muted);">first_page</span>' +
+        '<span class="material-icons" style="font-size:16px;color:var(--text-muted);">chevron_left</span>' +
+        '<span style="border:1px solid var(--border);padding:2px 8px;border-radius:2px;background:white;font-weight:600;">1</span>' +
+        '<span class="material-icons" style="font-size:16px;color:var(--text-muted);">chevron_right</span>' +
+        '<span class="material-icons" style="font-size:16px;color:var(--text-muted);">last_page</span>' +
+        '<select style="border:1px solid var(--border);border-radius:2px;height:22px;font-size:11px;padding:0 4px;"><option>20</option></select>' +
+        '<span>items per page</span>' +
+      '</div>' +
+      '<span>1 – ' + count + ' of ' + count + ' items <span class="material-icons" style="font-size:14px;vertical-align:middle;cursor:pointer;">refresh</span></span>' +
+    '</div>';
+    container.innerHTML = html;
+  }
+
   function handleMemberAssessmentCompleted(assessmentType) {
     var now = new Date();
     var mm = String(now.getMonth()+1).padStart(2,'0');
@@ -4869,9 +5031,24 @@ window._gcAllAssessmentQA = {
       );
     }
 
+    // Add OGI entry to care plan
+    if (!d.carePlanOGI) d.carePlanOGI = [];
+    var alreadyOGI = d.carePlanOGI.some(function(o) { return o.assessmentType === assessmentType; });
+    if (!alreadyOGI) {
+      var tpl = _OGI_TEMPLATES[assessmentType] || {
+        opportunity: 'Potential need identified via ' + assessmentType,
+        goal: 'Member has a plan to address needs identified during ' + assessmentType,
+        condition: 'General',
+        intervention: 'Follow up on results from ' + assessmentType + ' and connect member with appropriate resources',
+        priority: 'High'
+      };
+      d.carePlanOGI.push({ assessmentType: assessmentType, opportunity: tpl.opportunity, goal: tpl.goal, condition: tpl.condition, intervention: tpl.intervention, priority: tpl.priority });
+    }
+
     // Re-render and navigate to Activity Summary if on Maria Rivera's profile
     if (currentMemberKey === 'maria-rivera') {
       populateTabs('maria-rivera');
+      renderCarePlanOGI('maria-rivera');
       goToActivitySummary();
     }
   }
