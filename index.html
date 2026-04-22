@@ -378,7 +378,7 @@
     </div>
     <div class="gc-nav-icons">
       <div class="gc-nav-icon-btn"><span class="material-icons">notifications</span><div class="gc-nav-badge">3</div></div>
-      <div class="gc-nav-icon-btn"><img src="assets/gmail.png" alt="Gmail" style="width:20px;height:20px;object-fit:contain;" /><div class="gc-nav-badge">1</div></div>
+      <div class="gc-nav-icon-btn"><span class="material-icons">mail</span><div class="gc-nav-badge">1</div></div>
       <div class="gc-nav-icon-btn"><span class="material-icons">account_circle</span></div>
       <div class="gc-nav-icon-btn"><span class="material-icons">help_outline</span></div>
     </div>
@@ -714,7 +714,7 @@
         <label style="font-weight:700;color:var(--text-label);">Module</label>
         <select style="width:55px;"><option>CM</option><option>UM</option></select>
         <label style="font-weight:700;color:var(--text-label);">Type</label>
-        <select style="width:80px;"><option>Member</option><option>UM Activity</option></select>
+        <select id="rr-type-select" style="width:80px;" onchange="rrTypeChange(this.value)"><option>Activity</option><option>Member</option><option>Messages</option><option>Appointment</option><option>Care Plan</option><option>Faxes</option></select>
         <label style="font-weight:700;color:var(--text-label);">Member Name</label>
         <input type="text" style="width:100px;">
         <label style="font-weight:700;color:var(--text-label);">Risk Type</label>
@@ -730,20 +730,26 @@
         <label style="font-weight:700;color:var(--text-label);">Work Queue</label>
         <select style="width:80px;"><option>Select</option></select>
       </div>
-      <div style="padding:4px 10px;display:flex;justify-content:flex-end;gap:6px;border-bottom:1px solid var(--border-light);background:var(--white);">
+      <div id="rr-action-bar" style="padding:4px 10px;display:flex;justify-content:flex-end;gap:6px;border-bottom:1px solid var(--border-light);background:var(--white);">
         <button class="gc-btn gc-btn-sm gc-btn-primary"><span class="material-icons" style="font-size:11px;">search</span> Search</button>
         <button class="gc-btn gc-btn-sm gc-btn-tertiary"><span class="material-icons" style="font-size:11px;">close</span> Clear</button>
-        <button class="gc-btn gc-btn-sm gc-btn-secondary"><span class="material-icons" style="font-size:11px;">check</span> Accept</button>
+        <span id="rr-btn-accept"><button class="gc-btn gc-btn-sm gc-btn-secondary"><span class="material-icons" style="font-size:11px;">check</span> Accept</button></span>
+        <span id="rr-btn-careplan" style="display:none;">
+          <button class="gc-btn gc-btn-sm gc-btn-secondary" style="gap:4px;"><span class="material-icons" style="font-size:11px;">draw</span> Sign Off</button>
+          <button class="gc-btn gc-btn-sm gc-btn-tertiary" style="gap:4px;"><span class="material-icons" style="font-size:11px;">block</span> Reject</button>
+        </span>
       </div>
       <div class="dash-panel-body" style="overflow:auto;">
-        <table class="gc-table" style="font-size:11px;">
+        <table id="rr-table-default" class="gc-table" style="font-size:11px;">
           <thead>
             <tr>
               <th style="padding:4px 8px;width:28px;"><input type="checkbox"></th>
               <th style="padding:4px 8px;">Member Name</th>
+              <th style="padding:4px 8px;">Activity Type</th>
+              <th style="padding:4px 8px;">Scheduled Date</th>
               <th style="padding:4px 8px;">Refer Date</th>
-              <th style="padding:4px 8px;">Refer by</th>
-              <th style="padding:4px 8px;">Refer To</th>
+              <th style="padding:4px 8px;">Assigned By</th>
+              <th style="padding:4px 8px;">Priority</th>
               <th style="padding:4px 8px;">Status</th>
               <th style="padding:4px 8px;">WQ</th>
             </tr>
@@ -751,12 +757,49 @@
           <tbody>
             <tr>
               <td style="padding:4px 8px;"><input type="checkbox"></td>
-              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Adam Eve</a></td>
-              <td style="padding:4px 8px;">07/25/2025</td>
-              <td style="padding:4px 8px;">Jennifer Reyes</td>
+              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Robert Chen</a></td>
+              <td style="padding:4px 8px;">Assessment- Fall Prevention</td>
+              <td style="padding:4px 8px;">04/10/2026</td>
+              <td style="padding:4px 8px;">04/10/2026</td>
               <td style="padding:4px 8px;">Beatrice Kanya</td>
+              <td style="padding:4px 8px;">N/A</td>
+              <td style="padding:4px 8px;">Complete</td>
+              <td style="padding:4px 8px;"><span style="background:#315E7B;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:2px;cursor:pointer;">WQ</span></td>
+            </tr>
+            <tr>
+              <td style="padding:4px 8px;"><input type="checkbox"></td>
+              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Sarah Williams</a></td>
+              <td style="padding:4px 8px;">Assessment- Maternal Health</td>
+              <td style="padding:4px 8px;">04/15/2026</td>
+              <td style="padding:4px 8px;">04/15/2026</td>
+              <td style="padding:4px 8px;">Beatrice Kanya</td>
+              <td style="padding:4px 8px;">High</td>
               <td style="padding:4px 8px;">Pending</td>
-              <td style="padding:4px 8px;"></td>
+              <td style="padding:4px 8px;"><span style="background:#315E7B;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:2px;cursor:pointer;">WQ</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <table id="rr-table-careplan" class="gc-table" style="font-size:11px;display:none;">
+          <thead>
+            <tr>
+              <th style="padding:4px 8px;width:28px;"><input type="checkbox"></th>
+              <th style="padding:4px 8px;">Member Name</th>
+              <th style="padding:4px 8px;">Condition</th>
+              <th style="padding:4px 8px;">Goal Name</th>
+              <th style="padding:4px 8px;">Intervention</th>
+              <th style="padding:4px 8px;">Start Date</th>
+              <th style="padding:4px 8px;">Target Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:4px 8px;"><input type="checkbox"></td>
+              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Sarah Williams</a></td>
+              <td style="padding:4px 8px;">Gestational Diabetes</td>
+              <td style="padding:4px 8px;">Member/caregiver has a plan to manage blood glucose levels through delivery.</td>
+              <td style="padding:4px 8px;">Explore dietary support and connect with perinatal care coordinator for weekly check-ins.</td>
+              <td style="padding:4px 8px;">04/15/2026</td>
+              <td style="padding:4px 8px;">07/15/2026</td>
             </tr>
           </tbody>
         </table>
@@ -5317,6 +5360,14 @@ function updateWellframeSection() {
     if (cb) cb.checked = false;
     if (note) note.style.display = 'none';
   }
+}
+
+function rrTypeChange(val) {
+  var isCarePlan = val === 'Care Plan';
+  document.getElementById('rr-table-default').style.display = isCarePlan ? 'none' : '';
+  document.getElementById('rr-table-careplan').style.display = isCarePlan ? '' : 'none';
+  document.getElementById('rr-btn-accept').style.display = isCarePlan ? 'none' : '';
+  document.getElementById('rr-btn-careplan').style.display = isCarePlan ? '' : 'none';
 }
 </script>
 
