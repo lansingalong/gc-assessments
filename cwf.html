@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GuidingCare - Member Profile</title>
-<link rel="icon" type="image/png" href="assets/_Custom/Wordmark.png">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
@@ -355,6 +354,94 @@
   .gc-footer-right { display: flex; align-items: center; gap: 12px; }
   .gc-footer-health { display: flex; align-items: center; gap: 4px; color: #2E7D32; }
   .gc-footer-health .material-icons { font-size: 14px; }
+
+  /* ── Wellframe Mobile Panel ── */
+  #wellframe-panel-content { padding: 0 !important; background: #EBEBEB !important; display: flex; flex-direction: column; }
+  .wfm-hd { display:flex; align-items:center; gap:10px; padding:12px 16px; background:#fff; border-bottom:1px solid var(--border-light); flex-shrink:0; }
+  .wfm-hd-logo { width:26px; height:26px; object-fit:contain; flex-shrink:0; }
+  .wfm-hd-title { font-size:13px; font-weight:700; color:var(--teal-dark); }
+  .wfm-hd-sub { font-size:11px; color:var(--text-muted); }
+  .wfm-switcher { display:flex; gap:6px; padding:8px 16px; background:#fff; border-bottom:1px solid var(--border-light); flex-shrink:0; }
+  .wfm-sw-btn { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:20px; border:1px solid var(--border); font-size:11px; font-weight:600; cursor:pointer; background:#fff; color:var(--text-secondary); }
+  .wfm-sw-btn .material-icons { font-size:13px; }
+  .wfm-sw-btn.active { background:var(--teal); color:#fff; border-color:var(--teal); }
+  .wfm-device-wrap { flex:1; display:flex; justify-content:center; padding:20px 16px 28px; overflow-y:auto; }
+  .wfm-device { width:296px; background:#18181B; border-radius:44px; padding:10px; box-shadow:0 16px 48px rgba(0,0,0,0.4),inset 0 0 0 1px #3a3a3a; flex-shrink:0; }
+  .wfm-screen-outer { background:#F2F8FA; border-radius:36px; overflow:hidden; }
+  .wfm-status { background:#F2F8FA; display:flex; justify-content:space-between; align-items:center; padding:10px 20px 0; height:44px; }
+  .wfm-time { font-size:15px; font-weight:600; color:#161B1F; letter-spacing:0.2px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-status-icons { display:flex; align-items:center; gap:4px; color:#161B1F; }
+  .wfm-status-icons .material-icons { font-size:14px; }
+  .wfm-screen-scroll { overflow-y:auto; max-height:440px; }
+  .wfm-screen { display:none; }
+  .wfm-screen.wfm-active { display:block; }
+  .wfm-tab-bar { background:#fff; border-top:1px solid #D9E3E7; display:flex; padding:8px 0 22px; }
+  .wfm-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; border:none; background:none; }
+  .wfm-tab .material-icons { font-size:22px; color:#4E5961; }
+  .wfm-tab-lbl { font-size:9px; color:#4E5961; letter-spacing:0.05px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-tab.wfm-tab-on .material-icons { color:#0080A3; }
+  .wfm-tab.wfm-tab-on .wfm-tab-lbl { color:#0080A3; }
+  .wfm-page { padding:4px 16px 12px; }
+  .wfm-page-title { font-family:Georgia,'Times New Roman',serif; font-size:22px; color:#161B1F; margin-bottom:18px; padding-top:10px; letter-spacing:0.3px; }
+  .wfm-sec-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .wfm-sec-title { font-size:17px; color:#161B1F; font-weight:400; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-add-btn { display:inline-flex; align-items:center; gap:4px; background:#fff; border-radius:4px; padding:5px 10px; font-size:12px; color:#0E98BE; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.15); font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-add-btn .material-icons { font-size:14px; }
+  .wfm-step-card { background:#fff; border-radius:10px; margin-bottom:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-step-head { display:flex; align-items:center; gap:10px; padding:11px 12px 11px 16px; }
+  .wfm-step-head .material-icons { font-size:20px; color:#0E98BE; }
+  .wfm-step-title { flex:1; font-size:14px; color:#282F35; font-family:system-ui,-apple-system,sans-serif; letter-spacing:-0.2px; }
+  .wfm-step-chev { color:#282F35; }
+  .wfm-step-bar { height:6px; background:#D9E3E7; }
+  .wfm-step-fill { height:100%; background:linear-gradient(to right,#0E98BE,#0080A3); width:41%; }
+  .wfm-task-card { background:#fff; border-radius:10px; margin-bottom:8px; padding:11px 12px; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-task-card.wfm-done { opacity:0.5; }
+  .wfm-task-head { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .wfm-task-head .material-icons { font-size:18px; color:#0E98BE; }
+  .wfm-task-type { font-size:13px; color:#0080A3; font-family:system-ui,-apple-system,sans-serif; letter-spacing:-0.2px; }
+  .wfm-task-main { display:flex; align-items:center; gap:6px; }
+  .wfm-task-title { flex:1; font-size:14px; color:#282F35; line-height:1.3; font-family:system-ui,-apple-system,sans-serif; letter-spacing:-0.2px; }
+  .wfm-task-chev .material-icons { font-size:18px; color:#282F35; }
+  .wfm-task-check .material-icons { font-size:20px; color:#73BE5E; }
+  .wfm-care-tag { display:inline-flex; align-items:center; gap:4px; background:#F0F4F5; border-radius:20px; padding:4px 8px; margin-top:6px; }
+  .wfm-care-tag .material-icons { font-size:11px; color:#0080A3; }
+  .wfm-care-tag-txt { font-size:10px; color:#4E5961; font-weight:500; font-family:system-ui,-apple-system,sans-serif; letter-spacing:0.04px; }
+  .wfm-prof-hd { background:#fff; border-bottom:1px solid #D9E3E7; padding:10px 16px 14px; }
+  .wfm-prof-title-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .wfm-prof-title { font-family:Georgia,'Times New Roman',serif; font-size:22px; color:#161B1F; }
+  .wfm-prof-scroll { padding:0 16px 16px; background:#F2F8FA; }
+  .wfm-user-row { display:flex; align-items:center; gap:12px; }
+  .wfm-avatar { width:44px; height:44px; border-radius:22px; background:#0080A3; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; font-weight:700; flex-shrink:0; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-user-name { font-size:17px; font-weight:500; color:#282F35; font-family:system-ui,-apple-system,sans-serif; letter-spacing:-0.3px; }
+  .wfm-user-day { font-size:12px; color:#78868E; margin-top:2px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-prof-sec { font-size:17px; color:#161B1F; font-weight:400; margin:14px 0 8px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-cp-scroll { display:flex; overflow-x:auto; gap:0; margin:0 -16px; padding:4px 16px; }
+  .wfm-cp-card { width:140px; border-radius:10px; overflow:hidden; background:#fff; flex-shrink:0; box-shadow:0 1px 4px rgba(0,0,0,.15); margin-right:10px; }
+  .wfm-cp-top { padding:12px 12px 8px; }
+  .wfm-cp-top .material-icons { font-size:20px; color:#0E98BE; margin-bottom:6px; display:block; }
+  .wfm-cp-title { font-size:13px; font-weight:500; color:#161B1F; line-height:1.3; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-cp-bot { height:56px; display:flex; align-items:center; justify-content:center; }
+  .wfm-ci-card { background:#fff; border-radius:10px; margin-bottom:8px; padding:11px 12px; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-ci-row { display:flex; align-items:center; gap:10px; }
+  .wfm-ci-row .material-icons { font-size:18px; color:#0E98BE; flex-shrink:0; }
+  .wfm-ci-body { flex:1; }
+  .wfm-ci-name { font-size:13px; font-weight:500; color:#282F35; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-ci-sub { font-size:11px; color:#4E5961; margin-top:2px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-ci-prog { display:flex; align-items:center; gap:6px; margin-top:5px; }
+  .wfm-ci-track { flex:1; height:4px; background:#D9E3E7; border-radius:2px; overflow:hidden; }
+  .wfm-ci-fill { height:100%; background:#0080A3; border-radius:2px; }
+  .wfm-ci-pct { font-size:10px; color:#78868E; font-weight:500; font-family:system-ui,-apple-system,sans-serif; min-width:24px; }
+  .wfm-list-card { background:#fff; border-radius:10px; margin-bottom:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-list-row { display:flex; align-items:center; padding:9px 12px; gap:9px; border-bottom:1px solid #F0F4F5; }
+  .wfm-list-row:last-child { border-bottom:none; }
+  .wfm-list-row .material-icons { font-size:17px; color:#0E98BE; flex-shrink:0; }
+  .wfm-list-body { flex:1; min-width:0; }
+  .wfm-list-name { font-size:13px; font-weight:500; color:#282F35; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-list-sub { font-size:11px; color:#4E5961; margin-top:1px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-list-note { font-size:10px; color:#0E98BE; margin-top:1px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-add-row { display:flex; align-items:center; gap:8px; background:#fff; border-radius:10px; padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-add-row .material-icons { font-size:18px; color:#0E98BE; }
+  .wfm-add-row-lbl { font-size:13px; color:#0E98BE; font-weight:600; font-family:system-ui,-apple-system,sans-serif; }
 </style>
 </head>
 <body>
@@ -379,7 +466,7 @@
     </div>
     <div class="gc-nav-icons">
       <div class="gc-nav-icon-btn"><span class="material-icons">notifications</span><div class="gc-nav-badge">3</div></div>
-      <div class="gc-nav-icon-btn"><img src="assets/gmail.png" alt="Gmail" style="width:20px;height:20px;object-fit:contain;" /><div class="gc-nav-badge">1</div></div>
+      <div class="gc-nav-icon-btn"><span class="material-icons">email</span><div class="gc-nav-badge">1</div></div>
       <div class="gc-nav-icon-btn"><span class="material-icons">account_circle</span></div>
       <div class="gc-nav-icon-btn"><span class="material-icons">help_outline</span></div>
     </div>
@@ -836,6 +923,9 @@
     </div>
     <div class="gc-left-item" data-left="packet-log">
       <span class="gc-left-icon"><span class="material-icons">move_to_inbox</span></span><span class="gc-left-label">Packet Log</span>
+    </div>
+    <div class="gc-left-item" data-left="wellframe" role="button" aria-label="Wellframe">
+      <span class="gc-left-icon"><img src="assets/Wellframe/Logomark.png" alt="" aria-hidden="true" style="width:22px;height:22px;object-fit:contain;" /></span><span class="gc-left-label">Wellframe</span>
     </div>
   </nav>
 
@@ -3335,6 +3425,13 @@
       </div>
     </div>
 
+    <!-- ═══ LEFT PANEL: Wellframe ═══ -->
+    <div class="left-panel" id="panel-wellframe">
+      <div class="content-body" id="wellframe-panel-content">
+        <!-- populated by populateProfile -->
+      </div>
+    </div>
+
     <!-- ═══ LEFT PANEL: Packet Log ═══ -->
     <div class="left-panel" id="panel-packet-log">
       <div class="content-body">
@@ -3828,6 +3925,16 @@ function openScriptResponseModal() {
     document.getElementById('modalSuccessBanner').style.display = 'none';
   };
 
+  // Wellframe mobile panel screen switcher
+  window.wfmTab = function(screen) {
+    document.querySelectorAll('.wfm-screen').forEach(function(s) { s.classList.remove('wfm-active'); });
+    var el = document.getElementById('wfm-screen-' + screen);
+    if (el) el.classList.add('wfm-active');
+    document.querySelectorAll('.wfm-sw-btn').forEach(function(b) { b.classList.remove('active'); });
+    var btn = document.querySelector('.wfm-sw-btn[data-screen="' + screen + '"]');
+    if (btn) btn.classList.add('active');
+  };
+
   window.showActivitySuccess = function(closeModal) {
     var modalBanner = document.getElementById('modalSuccessBanner');
     var m = memberData[currentMemberKey];
@@ -3850,20 +3957,10 @@ function openScriptResponseModal() {
     if (modalBody) modalBody.scrollTop = 0;
 
     // Add the activity to the outstanding activities table
-    var actType = document.querySelector('#addActivityModal .gc-modal-select') ;
-    var actTypeSelects = document.querySelectorAll('#addActivityModal .gc-modal-select');
-    var activityTypeVal = 'N/A';
-    var notesVal = '';
-    // Find the Activity Type select (3rd select in modal) and notes
-    actTypeSelects.forEach(function(sel) {
-      var label = sel.closest('.gc-modal-field');
-      if (label) {
-        var lbl = label.querySelector('label');
-        if (lbl && lbl.textContent.indexOf('Activity Type') > -1) activityTypeVal = sel.value !== 'Select' ? sel.value : 'N/A';
-      }
-    });
+    var modalActivityTypeEl = document.getElementById('modalActivityType');
+    var activityTypeVal = (modalActivityTypeEl && modalActivityTypeEl.value !== 'Select') ? modalActivityTypeEl.value : 'N/A';
     var commentArea = document.querySelector('#addActivityModal textarea');
-    if (commentArea) notesVal = commentArea.value || 'N/A';
+    var notesVal = commentArea ? (commentArea.value || 'N/A') : 'N/A';
     window._gcSelectedActivity = activityTypeVal;
 
     var now = new Date();
@@ -3902,6 +3999,59 @@ function openScriptResponseModal() {
         '<span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td>';
       outTbody.insertBefore(otr, outTbody.firstChild);
       setTimeout(function() { otr.style.transition = 'background 1.5s'; otr.style.background = ''; }, 100);
+    }
+
+    // If Wellframe Assessment checkbox is checked, write assignment to wf_member_checklist so m-cwf shows it
+    var wfCheck = document.getElementById('wellframeAssessmentCheck');
+    if (wfCheck && wfCheck.checked && activityTypeVal !== 'N/A') {
+      try {
+        var ls = window.localStorage;
+        var now2 = new Date();
+        var p2 = function(n) { return String(n).padStart(2,'0'); };
+        var dateStr2 = p2(now2.getMonth()+1)+'/'+p2(now2.getDate())+'/'+now2.getFullYear();
+        var existingList = JSON.parse(ls.getItem('wf_member_checklist') || '[]');
+        var alreadyExists = existingList.some(function(item) {
+          return item.memberKey === currentMemberKey && item.assessment === activityTypeVal && item.status !== 'Completed';
+        });
+        if (!alreadyExists) {
+          existingList.push({
+            memberKey: currentMemberKey,
+            assessment: activityTypeVal,
+            addedBy: 'Beatrice Kanya',
+            date: dateStr2,
+            status: 'Pending',
+          });
+          ls.setItem('wf_member_checklist', JSON.stringify(existingList));
+          // Broadcast to m-cwf (cross-port, same browser)
+          try {
+            var bc = new BroadcastChannel('wf_checklist');
+            bc.postMessage({ type: 'assigned', list: existingList });
+            bc.close();
+          } catch(_) {}
+          // Add the new assessment card to the live Wellframe checklist panel
+          var checklistEl = document.getElementById('wfm-screen-checklist');
+          if (checklistEl) {
+            var newCard = document.createElement('div');
+            newCard.className = 'wfm-task-card';
+            newCard.dataset.assessment = activityTypeVal;
+            newCard.innerHTML =
+              '<div class="wfm-task-head"><span class="material-icons">assignment</span><span class="wfm-task-type">Check-In</span></div>' +
+              '<div class="wfm-task-main"><span class="wfm-task-title">' + activityTypeVal + '</span>' +
+              '<span class="wfm-task-chev"><span class="material-icons">chevron_right</span></span></div>' +
+              '<div class="wfm-care-tag"><span class="material-icons">favorite</span><span class="wfm-care-tag-txt">Assigned by Care Manager</span></div>';
+            // Insert before the "Complete" section if it exists, otherwise append
+            var secRows = checklistEl.querySelectorAll('.wfm-sec-row');
+            var completeRow = null;
+            secRows.forEach(function(row) { if (row.textContent.indexOf('Complete') > -1) completeRow = row; });
+            if (completeRow) {
+              checklistEl.querySelector('.wfm-page').insertBefore(newCard, completeRow);
+            } else {
+              var page = checklistEl.querySelector('.wfm-page');
+              if (page) page.appendChild(newCard);
+            }
+          }
+        }
+      } catch(_) {}
     }
 
     // Also add to General Activity table in Activity Summary
@@ -4234,7 +4384,11 @@ function openScriptResponseModal() {
     var genTbody = document.getElementById('generalActivityTbody');
     if (genTbody) genTbody.innerHTML = d.generalActivity.join('');
     var outTbody = document.getElementById('outstandingTbody');
-    if (outTbody) outTbody.innerHTML = d.outstandingActivities.join('');
+    if (outTbody) {
+      var dynamicRows = Array.from(outTbody.querySelectorAll('tr[data-dynamic="true"]'));
+      outTbody.innerHTML = d.outstandingActivities.join('');
+      dynamicRows.forEach(function(row) { outTbody.appendChild(row); });
+    }
     pendingOutstandingActivities = [];
     var alertsTbody = document.querySelector('#artab-member-alerts .gc-table tbody');
     if (alertsTbody) alertsTbody.innerHTML = d.memberAlerts.join('');
@@ -4365,6 +4519,157 @@ function openScriptResponseModal() {
     // Modal member name
     var modalName = document.getElementById('modalMemberName');
     if (modalName) modalName.textContent = m.name;
+
+    // Wellframe panel — phone mockup
+    var wfPanel = document.getElementById('wellframe-panel-content');
+    if (wfPanel) {
+      var isEnrolled = m.digital === 'Wellframe';
+      if (!isEnrolled) {
+        wfPanel.innerHTML =
+          '<div class="wfm-hd">' +
+            '<img src="assets/Wellframe/Logomark.png" alt="Wellframe" class="wfm-hd-logo" style="opacity:0.4;" />' +
+            '<div><div class="wfm-hd-title" style="color:var(--text-secondary);">Wellframe</div><div class="wfm-hd-sub">Digital Health Platform</div></div>' +
+            '<span class="gc-badge" style="margin-left:auto;background:#eee;color:var(--text-secondary);">Not Enrolled</span>' +
+          '</div>' +
+          '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;color:var(--text-muted);">' +
+            '<span class="material-icons" style="font-size:48px;color:#ccc;display:block;margin-bottom:12px;">smartphone</span>' +
+            '<div style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">' + m.name + ' is not enrolled in Wellframe</div>' +
+            '<div style="font-size:12px;">Enroll this member to view their mobile app experience.</div>' +
+          '</div>';
+      } else {
+        var wfData = {
+          'jackson-thomas': {
+            initials: 'JT', days: 103,
+            program: 'Diabetes Management', programAccent: '#D8EDF5',
+            checklist: [
+              { type: 'Reminder',  icon: 'alarm',      title: '10:00 AM: Take a walk', done: false },
+              { type: 'Check-In',  icon: 'assignment',  title: 'Health Risk Assessment', tag: 'Digital Intake Assessment', done: false },
+              { type: 'Medication',icon: 'medication',  title: '10:00 AM: Take Claritin', done: true },
+              { type: 'Article',   icon: 'article',     title: 'About Diabetes Medications', tag: 'Diabetes Management', done: true }
+            ],
+            checkins: [
+              { name: 'Health Risk Assessment', sub: 'Due Apr 20, 2026', pct: 0 },
+              { name: 'Fall Risk Assessment',   sub: 'Due May 3, 2026',  pct: 0 }
+            ],
+            meds: [
+              { name: 'Gabapentin',  schedule: 'Take daily, at 9:00AM', note: 'New — Starting tomorrow' },
+              { name: 'Metformin',   schedule: 'Take daily, at 9:00AM' },
+              { name: 'Claritin',    schedule: 'Take daily, at 9:00AM' }
+            ],
+            reminders: [
+              { name: 'Take a walk',               schedule: 'Daily, at 9:00AM' },
+              { name: 'Endocrinology appointment', schedule: 'Jan 15, 2024 at 8:00AM' }
+            ]
+          },
+          'sarah-williams': {
+            initials: 'SW', days: 47,
+            program: 'Maternal Health', programAccent: '#F0E6FA',
+            checklist: [
+              { type: 'Reminder',  icon: 'alarm',      title: '2:00 PM: Prenatal vitamins', done: false },
+              { type: 'Check-In',  icon: 'assignment',  title: 'Maternal Health Assessment', tag: 'Digital Intake Assessment', done: false },
+              { type: 'Article',   icon: 'article',     title: 'Gestational Diabetes Basics', tag: 'Maternal Health', done: true }
+            ],
+            checkins: [
+              { name: 'Maternal Health Assessment', sub: 'Due Apr 15, 2026', pct: 0 }
+            ],
+            meds: [
+              { name: 'Prenatal Vitamins', schedule: 'Take daily, at 2:00PM' },
+              { name: 'Folic Acid',        schedule: 'Take daily, at 9:00AM' }
+            ],
+            reminders: [
+              { name: 'OB check-up',         schedule: 'Apr 10, 2026 at 10:00AM' },
+              { name: 'Daily walk (15 min)', schedule: 'Daily, at 3:00PM' }
+            ]
+          }
+        };
+        var d = wfData[key] || { initials: m.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2), days: 1, program: m.program || 'Care Program', programAccent: '#D9E3E7', checklist: [], checkins: [], meds: [], reminders: [] };
+
+        function taskCard(item) {
+          return '<div class="wfm-task-card' + (item.done ? ' wfm-done' : '') + '">' +
+            '<div class="wfm-task-head"><span class="material-icons">' + item.icon + '</span><span class="wfm-task-type">' + item.type + '</span></div>' +
+            '<div class="wfm-task-main"><span class="wfm-task-title">' + item.title + '</span>' +
+            (item.done ? '<span class="wfm-task-check"><span class="material-icons">check_circle</span></span>' : '<span class="wfm-task-chev"><span class="material-icons">chevron_right</span></span>') +
+            '</div>' +
+            (item.tag ? '<div class="wfm-care-tag"><span class="material-icons">favorite</span><span class="wfm-care-tag-txt">' + item.tag + '</span></div>' : '') +
+            '</div>';
+        }
+        var pendingItems = d.checklist.filter(function(i){return !i.done;}).map(taskCard).join('');
+        var doneItems   = d.checklist.filter(function(i){return  i.done;}).map(taskCard).join('');
+
+        var checklistScreen =
+          '<div class="wfm-page">' +
+            '<div class="wfm-page-title">Checklist</div>' +
+            '<div class="wfm-sec-row"><span class="wfm-sec-title">Today</span><span class="wfm-add-btn"><span class="material-icons">add_circle_outline</span>Add</span></div>' +
+            '<div class="wfm-step-card"><div class="wfm-step-head"><span class="material-icons">directions_walk</span><span class="wfm-step-title">Step Count</span><span class="material-icons wfm-step-chev" style="font-size:18px;color:#282F35;">chevron_right</span></div><div class="wfm-step-bar"><div class="wfm-step-fill"></div></div></div>' +
+            pendingItems +
+            (doneItems ? '<div class="wfm-sec-row" style="margin-top:12px;"><span class="wfm-sec-title">Complete</span></div>' + doneItems : '') +
+          '</div>';
+
+        var ciCards = d.checkins.map(function(ci) {
+          return '<div class="wfm-ci-card"><div class="wfm-ci-row"><span class="material-icons">assignment_turned_in</span><div class="wfm-ci-body"><div class="wfm-ci-name">' + ci.name + '</div><div class="wfm-ci-sub">' + ci.sub + '</div><div class="wfm-ci-prog"><div class="wfm-ci-track"><div class="wfm-ci-fill" style="width:' + ci.pct + '%;"></div></div><span class="wfm-ci-pct">' + ci.pct + '%</span></div></div></div></div>';
+        }).join('');
+        var medRows = d.meds.map(function(med) {
+          return '<div class="wfm-list-row"><span class="material-icons">medication</span><div class="wfm-list-body"><div class="wfm-list-name">' + med.name + '</div><div class="wfm-list-sub">' + med.schedule + '</div>' + (med.note ? '<div class="wfm-list-note">' + med.note + '</div>' : '') + '</div><span class="material-icons" style="font-size:18px;color:#0E98BE;">alarm</span></div>';
+        }).join('');
+        var reminderRows = d.reminders.map(function(r) {
+          return '<div class="wfm-list-row"><div class="wfm-list-body"><div class="wfm-list-name">' + r.name + '</div><div class="wfm-list-sub">' + r.schedule + '</div></div><span class="material-icons" style="font-size:18px;color:#0E98BE;">alarm</span></div>';
+        }).join('');
+
+        var profileScreen =
+          '<div class="wfm-prof-hd">' +
+            '<div class="wfm-prof-title-row"><span class="wfm-prof-title">Profile</span><span class="material-icons" style="font-size:22px;color:#282F35;">settings</span></div>' +
+            '<div class="wfm-user-row"><div class="wfm-avatar">' + d.initials + '</div><div><div class="wfm-user-name">' + m.preferred + ' ' + m.name.split(' ').slice(-1)[0] + '</div><div class="wfm-user-day">Day ' + d.days + ' on Wellframe</div></div></div>' +
+          '</div>' +
+          '<div class="wfm-prof-scroll">' +
+            '<div class="wfm-prof-sec">Enrolled Care Programs</div>' +
+            '<div class="wfm-cp-scroll">' +
+              '<div class="wfm-cp-card"><div class="wfm-cp-top"><span class="material-icons">favorite</span><div class="wfm-cp-title">' + d.program + '</div></div><div class="wfm-cp-bot" style="background:' + d.programAccent + ';"><span class="material-icons" style="font-size:32px;color:#0080A3;opacity:0.4;">local_hospital</span></div></div>' +
+            '</div>' +
+            '<div class="wfm-prof-sec">Check-Ins</div>' + ciCards +
+            '<div class="wfm-prof-sec">Medication List</div>' +
+            '<div class="wfm-add-row"><span class="material-icons">add_circle_outline</span><span class="wfm-add-row-lbl">Add Medication</span></div>' +
+            '<div class="wfm-list-card">' + medRows + '</div>' +
+            '<div class="wfm-prof-sec">Health Reminders</div>' +
+            '<div class="wfm-add-row"><span class="material-icons">add_circle_outline</span><span class="wfm-add-row-lbl">Add Reminder</span></div>' +
+            '<div class="wfm-list-card">' + reminderRows + '</div>' +
+          '</div>';
+
+        var tabBar =
+          '<div class="wfm-tab-bar">' +
+            '<button class="wfm-tab wfm-tab-on" onclick="wfmTab(\'checklist\')" aria-label="Checklist"><span class="material-icons">checklist</span><span class="wfm-tab-lbl">Checklist</span></button>' +
+            '<button class="wfm-tab" onclick="wfmTab(\'progress\')" aria-label="Progress"><span class="material-icons">show_chart</span><span class="wfm-tab-lbl">Progress</span></button>' +
+            '<button class="wfm-tab" onclick="wfmTab(\'chat\')" aria-label="Chat"><span class="material-icons">chat_bubble_outline</span><span class="wfm-tab-lbl">Chat</span></button>' +
+            '<button class="wfm-tab" onclick="wfmTab(\'resources\')" aria-label="Resources"><span class="material-icons">menu_book</span><span class="wfm-tab-lbl">Resources</span></button>' +
+            '<button class="wfm-tab" onclick="wfmTab(\'profile\')" aria-label="Profile"><span class="material-icons">person_outline</span><span class="wfm-tab-lbl">Profile</span></button>' +
+          '</div>';
+
+        wfPanel.innerHTML =
+          '<div class="wfm-hd">' +
+            '<img src="assets/Wellframe/Logomark.png" alt="Wellframe" class="wfm-hd-logo" />' +
+            '<div><div class="wfm-hd-title">Wellframe</div><div class="wfm-hd-sub">Member Mobile View</div></div>' +
+            '<span class="gc-badge gc-badge-teal" style="margin-left:auto;">Enrolled</span>' +
+          '</div>' +
+          '<div class="wfm-switcher">' +
+            '<button class="wfm-sw-btn active" data-screen="checklist" onclick="wfmTab(\'checklist\')"><span class="material-icons">checklist</span>Checklist</button>' +
+            '<button class="wfm-sw-btn" data-screen="profile" onclick="wfmTab(\'profile\')"><span class="material-icons">person_outline</span>Profile</button>' +
+          '</div>' +
+          '<div class="wfm-device-wrap">' +
+            '<div class="wfm-device">' +
+              '<div class="wfm-screen-outer">' +
+                '<div class="wfm-status"><span class="wfm-time">9:41</span><div class="wfm-status-icons"><span class="material-icons">signal_cellular_alt</span><span class="material-icons">wifi</span><span class="material-icons">battery_full</span></div></div>' +
+                '<div class="wfm-screen-scroll">' +
+                  '<div id="wfm-screen-checklist" class="wfm-screen wfm-active">' + checklistScreen + '</div>' +
+                  '<div id="wfm-screen-profile"   class="wfm-screen">' + profileScreen + '</div>' +
+                  '<div id="wfm-screen-progress"  class="wfm-screen"><div style="padding:24px 16px;text-align:center;color:#78868E;font-size:13px;font-family:system-ui,sans-serif;">Progress screen</div></div>' +
+                  '<div id="wfm-screen-chat"      class="wfm-screen"><div style="padding:24px 16px;text-align:center;color:#78868E;font-size:13px;font-family:system-ui,sans-serif;">Chat screen</div></div>' +
+                  '<div id="wfm-screen-resources" class="wfm-screen"><div style="padding:24px 16px;text-align:center;color:#78868E;font-size:13px;font-family:system-ui,sans-serif;">Resources screen</div></div>' +
+                '</div>' +
+                tabBar +
+              '</div>' +
+            '</div>' +
+          '</div>';
+      }
+    }
 
     // Populate tab content for this member
     populateTabs(key);
@@ -4745,13 +5050,7 @@ function openScriptResponseModal() {
       setTimeout(function() { hraRow.style.transition = 'background 2s'; hraRow.style.background = ''; }, 200);
     }
 
-    // Remove any matching activity rows from Outstanding Activities
-    var outTbody = document.getElementById('outstandingTbody');
-    if (outTbody) {
-      outTbody.querySelectorAll('tr').forEach(function(row) {
-        if (row.textContent.indexOf(_actName) !== -1) row.remove();
-      });
-    }
+    // Leave Outstanding Activities rows as-is when assessment is completed
 
     // Add completed row to General Activity
     var genTbody = document.getElementById('generalActivityTbody');
@@ -5010,6 +5309,62 @@ function openScriptResponseModal() {
     }
   });
 
+  // Listen for m-cwf assessment completions via BroadcastChannel (cross-port) and storage event (same-origin fallback)
+  function handleChecklistUpdate(items) {
+    try {
+      var outTbody = document.getElementById('outstandingTbody');
+      if (!outTbody) return;
+      items.forEach(function(item) {
+        if (item.status !== 'Completed') return;
+        var rows = outTbody.querySelectorAll('tr');
+        var matched = false;
+        rows.forEach(function(row) {
+          var cells = row.querySelectorAll('td');
+          if (cells.length > 1 && cells[1].textContent.trim() === item.assessment) {
+            matched = true;
+          }
+        });
+        if (!matched) {
+          var now = new Date();
+          var p = function(n) { return String(n).padStart(2,'0'); };
+          var dateStr = p(now.getMonth()+1)+'/'+p(now.getDate())+'/'+now.getFullYear();
+          var timeStr = p(now.getHours())+':'+p(now.getMinutes());
+          var createdStr = dateStr+' '+timeStr+':'+p(now.getSeconds());
+          var tr = document.createElement('tr');
+          tr.dataset.dynamic = 'true';
+          tr.style.background = '#E8F5E9';
+          tr.innerHTML = '<td><input type="checkbox" /></td>' +
+            '<td>' + item.assessment + '</td>' +
+            '<td></td><td>High</td>' +
+            '<td>' + (item.date || dateStr) + '</td>' +
+            '<td>N/A</td><td>' + timeStr + '</td>' +
+            '<td>N/A</td><td>N/A</td><td>N/A</td>' +
+            '<td>Beatrice Kanya : All Access Admin</td>' +
+            '<td>N/A</td><td>Completed</td>' +
+            '<td>Beatrice Kanya : All Access Admin</td>' +
+            '<td>Completed via Wellframe</td>' +
+            '<td style="font-size:10px;">' + createdStr + '</td>' +
+            '<td><span class="material-icons" style="font-size:16px;color:#388e3c;">check</span></td>' +
+            '<td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td>';
+          outTbody.insertBefore(tr, outTbody.firstChild);
+        }
+      });
+    } catch(_) {}
+  }
+
+  try {
+    var _gcBc = new BroadcastChannel('wf_checklist');
+    _gcBc.onmessage = function(e) {
+      if (e.data && e.data.list) handleChecklistUpdate(e.data.list);
+    };
+  } catch(_) {}
+
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'wf_member_checklist' && e.newValue) {
+      try { handleChecklistUpdate(JSON.parse(e.newValue)); } catch(_) {}
+    }
+  });
+
   // Also listen via storage event (fallback for cross-tab on same origin)
   window.addEventListener('storage', function(e) {
     if (e.key === 'suki-note-ready' && e.newValue && window._gcOpenSukiNote) {
@@ -5075,15 +5430,15 @@ function openScriptResponseModal() {
           <select class="gc-modal-select" id="modalActivityType" onchange="updateWellframeSection()">
             <option>Select</option>
             <option>Health Risk Assessment</option>
-            <option>Maternal Health Assessment</option>
-            <option>Behavioral Health Assessment</option>
-            <option>Chronic Disease Management Assessment</option>
-            <option>Medication Review Assessment</option>
-            <option>Social Determinants of Health Assessment</option>
+            <option>Comprehensive Assessment</option>
             <option>Functional Status Assessment</option>
-            <option>Care Gaps Assessment</option>
-            <option>Transition of Care Assessment</option>
-            <option>Pediatric Developmental Assessment</option>
+            <option>Social Determinants of Health (SDOH) Assessment</option>
+            <option>Pediatric HRA</option>
+            <option>Oncology HRA</option>
+            <option>Fall Risk Assessment</option>
+            <option>Fall Risk Prevention</option>
+            <option>Transitions of Care (TOC) 1 Pre-Discharge</option>
+            <option>Transitions of Care (TOC) 3 Home Visit</option>
           </select>
         </div>
         <div class="gc-modal-field">

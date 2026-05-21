@@ -3826,13 +3826,17 @@ window._gcAllAssessmentQA = {
     tbody.querySelectorAll('tr[data-dynamic="true"]').forEach(function(r) { r.remove(); });
     // Re-render one row per localStorage item for this member
     var items = JSON.parse(localStorage.getItem('wf_member_checklist') || '[]');
-    var memberItems = items.filter(function(it) { return it.memberKey === currentMemberKey && it.status !== 'Completed' && it.status !== 'In Progress'; });
+    var memberItems = items.filter(function(it) { return it.memberKey === currentMemberKey && it.status !== 'Completed'; });
     memberItems.forEach(function(item) {
       var parts = (item.date || '').split(' ');
       var rowDate = parts[0] || '';
       var rowTime = parts[1] ? parts[1].substring(0, 5) : '';
       var tr = document.createElement('tr');
       tr.dataset.dynamic = 'true';
+      var assessmentCell = (currentMemberKey === 'maria-rivera')
+        ? '<a href="#" onclick="event.preventDefault();window.open(_ASSESSMENT_CAMPAIGN_URL+\'?assessment=\'+encodeURIComponent(\'' + item.assessment.replace(/'/g, "\\'") + '\'),\'assessment-window\');" style="color:var(--link);">' + item.assessment + '</a>'
+        : item.assessment;
+      var statusCell = item.status === 'In Progress' ? 'In Progress' : 'Accepted';
       tr.innerHTML = '<td><input type="checkbox" /></td>' +
         '<td>Assessment</td>' +
         '<td>Wellframe</td>' +
@@ -3840,11 +3844,11 @@ window._gcAllAssessmentQA = {
         '<td>' + rowDate + '</td>' +
         '<td>N/A</td>' +
         '<td>' + rowTime + '</td>' +
-        '<td>' + item.assessment + '</td>' +
+        '<td>' + assessmentCell + '</td>' +
         '<td>N/A</td><td>N/A</td>' +
         '<td>Beatrice Kanya : All Access Admin</td>' +
         '<td>N/A</td>' +
-        '<td>Accepted</td>' +
+        '<td>' + statusCell + '</td>' +
         '<td>Beatrice Kanya : All Access Admin</td>' +
         '<td>N/A</td>' +
         '<td style="font-size:10px;">' + item.date + '</td>' +
@@ -4233,6 +4237,10 @@ window._gcAllAssessmentQA = {
       });
       allItems.unshift({ assessment: scriptVal, addedBy: 'Beatrice Kanya', date: createdStr, status: 'Pending', memberKey: currentMemberKey });
       localStorage.setItem('wf_member_checklist', JSON.stringify(allItems));
+      // Signal m-unauthenticated (maria-rivera's app) which assessment to show
+      if (currentMemberKey === 'maria-rivera') {
+        localStorage.setItem('gc-pending-assessment', scriptVal);
+      }
     }
 
     // Sync Outstanding Activities table from localStorage (single source of truth)
@@ -4333,8 +4341,8 @@ window._gcAllAssessmentQA = {
     return window.location.pathname.replace(/\/[^\/]*$/, '');
   })();
   var _ASSESSMENT_CAMPAIGN_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:8081/member-assessmentscampaign/dist/'
-    : _SITE_BASE + '/member-assessmentscampaign/';
+    ? '/gc-assessments/m-unauthenticated/'
+    : _SITE_BASE + '/m-unauthenticated/';
   var _ACT = '<span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span>';
   var _VIS = '<span class="material-icons" style="font-size:14px;color:var(--teal);cursor:pointer;">visibility</span>';
   var _DEL = '<span style="font-size:10px;color:var(--link);cursor:pointer;">Delete</span>';
@@ -4380,7 +4388,7 @@ window._gcAllAssessmentQA = {
       generalActivity: [],
       carePlanOGI: [],
       outstandingActivities: [
-        '<tr><td><input type="checkbox"/></td><td>Assessment</td><td>SMS/Email</td><td>High</td><td>04/09/2026</td><td>N/A</td><td>08:00</td><td><a href="#" onclick="event.preventDefault();window.open(_ASSESSMENT_CAMPAIGN_URL,\'assessment-window\');" style="color:var(--link);">Health Risk Assessment</a></td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">04/09/2026 08:00:00</td><td style="white-space:nowrap;">' + _ACT + '</td></tr>'
+        '<tr><td><input type="checkbox"/></td><td>Assessment</td><td>SMS/Email</td><td>High</td><td>04/09/2026</td><td>N/A</td><td>08:00</td><td><a href="#" onclick="event.preventDefault();window.open(_ASSESSMENT_CAMPAIGN_URL+\'?assessment=\'+encodeURIComponent(\'Health Risk Assessment\'),\'assessment-window\');" style="color:var(--link);">Health Risk Assessment</a></td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">04/09/2026 08:00:00</td><td style="white-space:nowrap;">' + _ACT + '</td></tr>'
       ],
       memberAlerts: [
         _ar('gc-badge-danger','New','CHF Exacerbation — Weight gain 4 lbs in 7 days','Automated weight monitoring alert: Member gained 4 lbs since 03/11/2026, exceeding 3 lb threshold for CHF decompensation risk. Care manager contacted and Furosemide dose adjusted per physician order. Daily weight monitoring reinforced.','03/18/2026'),
@@ -5109,9 +5117,10 @@ window._gcAllAssessmentQA = {
     var d = memberTabData['maria-rivera'];
     if (!d) return;
 
-    // Remove from outstanding activities
-    d.outstandingActivities = d.outstandingActivities.filter(function(html) {
-      return html.indexOf(assessmentType) === -1;
+    // Update outstanding activity status to In Progress (keep it visible)
+    d.outstandingActivities = d.outstandingActivities.map(function(html) {
+      if (html.indexOf(assessmentType) === -1) return html;
+      return html.replace(/>Accepted<\/td>/, '>In Progress</td>');
     });
 
     // Add pending entry if no entry already exists for this assessment
