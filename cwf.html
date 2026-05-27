@@ -35,14 +35,14 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); color: var(--text-primary); background: #EBEBEB; font-size: 13px; line-height: 1.5; }
+  body { font-family: var(--font); color: var(--text-primary); background: var(--white); font-size: 13px; line-height: 1.5; }
 
   /* ════════════════════════════════
      ACTUAL GC COMPONENTS
   ════════════════════════════════ */
 
   /* ── Global nav (two-row) ── */
-  .gc-nav-outer { overflow: hidden; border: 1px solid var(--border); }
+  .gc-nav-outer { overflow: hidden; border: 1px solid var(--border); width: 100%; box-sizing: border-box; }
   .gc-nav-top { background: var(--white); display: flex; align-items: center; gap: 0; padding: 0 14px; height: 44px; border-bottom: 1px solid var(--border-light); }
   .gc-nav-logo { margin-right: 16px; display: flex; align-items: center; }
   .gc-nav-logo img { height: 31px; }
@@ -116,6 +116,12 @@
   .gc-banner-edit { color: var(--link); font-size: 12px; cursor: pointer; margin-left: 4px; text-decoration: none; }
   .gc-banner-dob { color: #555; font-size: 13px; }
   .gc-banner-expand { margin-left: auto; cursor: pointer; color: #315E7B; }
+
+  /* ── Simple tooltip ── */
+  .gc-tip { position:relative; display:inline-flex; align-items:center; cursor:default; }
+  .gc-tip::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#212121; color:#fff; font-size:11px; font-family:var(--font); white-space:nowrap; padding:5px 10px; border-radius:4px; pointer-events:none; opacity:0; transition:opacity 0.15s; z-index:9999; }
+  .gc-tip::before { content:''; position:absolute; bottom:calc(100% + 1px); left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#212121; pointer-events:none; opacity:0; transition:opacity 0.15s; z-index:9999; }
+  .gc-tip:hover::after, .gc-tip:hover::before { opacity:1; }
 
   /* ── Left sidebar nav (collapsed, icon-only, per-item hover tooltip) ── */
   .gc-left-nav { width: 44px; min-width: 44px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 4px 0; overflow: visible; position: relative; z-index: 50; }
@@ -221,13 +227,13 @@
 
   /* ── App layout ── */
   .app-body { display: flex; min-height: calc(100vh - 126px); }
-  .main-content { flex: 1; background: #EBEBEB; display: flex; flex-direction: column; }
+  .main-content { flex: 1; background: var(--white); display: flex; flex-direction: column; min-width: 0; }
   .content-tabs-area { background: var(--white); border-bottom: 1px solid var(--border); }
   .content-body { flex: 1; padding: 12px 16px; overflow-y: auto; background: var(--white); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
   .left-panel { display: none; }
-  .left-panel.active { display: block; }
+  .left-panel.active { display: flex; flex-direction: column; flex: 1; }
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .detail-grid-full { grid-column: 1 / -1; }
 
@@ -2936,11 +2942,15 @@
         <!-- Tab: Outstanding Activities -->
         <div class="ar-tab-panel" id="artab-outstanding-activities" style="display:none;">
 
-          <!-- Sub-tabs -->
-          <div style="display:flex;gap:16px;margin-bottom:12px;font-size:12px;">
-            <span style="font-weight:700;color:var(--text-primary);border-bottom:2px solid var(--text-primary);padding-bottom:4px;cursor:pointer;">Care Staff</span>
-            <span style="color:var(--text-muted);cursor:pointer;">External Care Team</span>
+          <!-- Design option buttons -->
+          <div id="oaOptionTabs" style="display:flex;gap:8px;margin-bottom:16px;font-size:12px;">
+            <button data-oa-option="1" onclick="switchOAOption(1)" style="padding:6px 16px;cursor:pointer;font-weight:600;font-family:var(--font);font-size:12px;border:none;border-radius:20px;background:#6750A4;color:#fff;">Option 1</button>
+            <button data-oa-option="2" onclick="switchOAOption(2)" style="padding:6px 16px;cursor:pointer;font-weight:600;font-family:var(--font);font-size:12px;border:none;border-radius:20px;background:#EDE9F6;color:#6750A4;">Option 2</button>
+            <button data-oa-option="3" onclick="switchOAOption(3)" style="padding:6px 16px;cursor:pointer;font-weight:600;font-family:var(--font);font-size:12px;border:none;border-radius:20px;background:#EDE9F6;color:#6750A4;">Option 3</button>
           </div>
+
+          <!-- ── Option 1 ── -->
+          <div id="oa-option-1">
 
           <!-- Filter bar -->
           <div style="background:var(--surface-light);border:1px solid var(--border);padding:10px 14px;margin-bottom:10px;">
@@ -2980,7 +2990,8 @@
                 <thead><tr>
                   <th style="width:28px;"><input type="checkbox" /></th>
                   <th>Activity Type</th>
-                  <th>MP</th>
+                  <th>Contact Method</th>
+                  <th>Member Visible</th>
                   <th>Priority</th>
                   <th>Follow up Date</th>
                   <th>Due Date</th>
@@ -2994,12 +3005,9 @@
                   <th>Assigned To / WQ</th>
                   <th>Notes</th>
                   <th>Created On</th>
-                  <th>Visible to Member</th>
                   <th style="width:80px;">Actions</th>
                 </tr></thead>
                 <tbody id="outstandingTbody">
-                  <tr><td><input type="checkbox" /></td><td>Follow Up.</td><td></td><td>High</td><td>03/27/2026</td><td>N/A</td><td>07:59</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">03/27/2026 08:00:00</td><td></td><td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td></tr>
-                  <tr><td><input type="checkbox" /></td><td>Assessments - Initial Outreach</td><td></td><td>Medium</td><td>03/20/2026</td><td>N/A</td><td>08:30</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">03/20/2026 07:04:07</td><td></td><td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td></tr>
                 </tbody>
               </table>
             </div>
@@ -3007,9 +3015,153 @@
               <div class="gc-pager-btn">«</div><div class="gc-pager-btn">‹</div><div class="gc-pager-btn active">1</div><div class="gc-pager-btn">›</div><div class="gc-pager-btn">»</div>
               <select style="font-size:11px;border:1px solid var(--border);border-radius:var(--r-sm);padding:1px 4px;margin-left:4px;"><option>20</option></select>
               <span>items per page</span>
-              <span style="margin-left:auto;font-size:11px;">1 - 2 of 2 items &nbsp;<span class="material-icons" style="font-size:13px;color:var(--text-muted);cursor:pointer;">refresh</span></span>
+              <span style="margin-left:auto;font-size:11px;">1 - 3 of 3 items &nbsp;<span class="material-icons" style="font-size:13px;color:var(--text-muted);cursor:pointer;">refresh</span></span>
             </div>
           </div>
+
+          </div><!-- /oa-option-1 -->
+
+          <!-- ── Option 2 ── -->
+          <div id="oa-option-2" style="display:none;">
+
+          <!-- Filter bar -->
+          <div style="background:var(--surface-light);border:1px solid var(--border);padding:10px 14px;margin-bottom:10px;">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">Search for Care Staff</label>
+                <input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:120px;" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">From Date <span style="color:var(--text-muted);font-weight:400;">MM/DD/YYYY</span></label>
+                <div style="display:flex;align-items:center;gap:2px;"><input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:100px;" /><span class="material-icons" style="font-size:16px;color:var(--teal);cursor:pointer;">calendar_month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">To Date <span style="color:var(--text-muted);font-weight:400;">MM/DD/YYYY</span></label>
+                <div style="display:flex;align-items:center;gap:2px;"><input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:100px;" /><span class="material-icons" style="font-size:16px;color:var(--teal);cursor:pointer;">calendar_month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">Status</label>
+                <select style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 22px 0 8px;font-size:12px;font-family:var(--font);outline:none;appearance:none;background:white url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2020/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;) no-repeat right 4px center;width:90px;"><option>Select</option><option>Accepted</option><option>Pending</option></select>
+              </div>
+              <button class="gc-btn gc-btn-primary" style="height:30px;"><span class="material-icons" style="font-size:14px;">search</span> Search</button>
+              <button class="gc-btn gc-btn-text" style="font-size:12px;"><span class="material-icons" style="font-size:14px;">close</span> Clear</button>
+            </div>
+          </div>
+
+          <!-- Toolbar -->
+          <div style="display:flex;align-items:center;gap:10px;font-size:11px;margin-bottom:4px;">
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">send</span> Refer</span>
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">history</span> Audit History</span>
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">check_box</span> Bulk Complete</span>
+          </div>
+
+          <!-- Outstanding Activities table -->
+          <div class="gc-table-wrap">
+            <div style="overflow-x:auto;">
+              <table class="gc-table">
+                <thead><tr>
+                  <th style="width:28px;"><input type="checkbox" /></th>
+                  <th>Activity Type</th>
+                  <th>Digital</th>
+                  <th>Priority</th>
+                  <th>Follow up Date</th>
+                  <th>Due Date</th>
+                  <th>Call Time</th>
+                  <th>Script Name</th>
+                  <th>Eligibility</th>
+                  <th>Program Name</th>
+                  <th>Assigned By</th>
+                  <th>Reassigned By</th>
+                  <th>Status</th>
+                  <th>Assigned To / WQ</th>
+                  <th>Notes</th>
+                  <th>Created On</th>
+                  <th style="width:80px;">Actions</th>
+                </tr></thead>
+                <tbody id="outstandingTbody2">
+                </tbody>
+              </table>
+            </div>
+            <div class="gc-table-footer">
+              <div class="gc-pager-btn">«</div><div class="gc-pager-btn">‹</div><div class="gc-pager-btn active">1</div><div class="gc-pager-btn">›</div><div class="gc-pager-btn">»</div>
+              <select style="font-size:11px;border:1px solid var(--border);border-radius:var(--r-sm);padding:1px 4px;margin-left:4px;"><option>20</option></select>
+              <span>items per page</span>
+              <span style="margin-left:auto;font-size:11px;">1 - 3 of 3 items &nbsp;<span class="material-icons" style="font-size:13px;color:var(--text-muted);cursor:pointer;">refresh</span></span>
+            </div>
+          </div>
+
+          </div><!-- /oa-option-2 -->
+
+          <!-- ── Option 3 ── -->
+          <div id="oa-option-3" style="display:none;">
+
+          <!-- Filter bar -->
+          <div style="background:var(--surface-light);border:1px solid var(--border);padding:10px 14px;margin-bottom:10px;">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">Search for Care Staff</label>
+                <input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:120px;" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">From Date <span style="color:var(--text-muted);font-weight:400;">MM/DD/YYYY</span></label>
+                <div style="display:flex;align-items:center;gap:2px;"><input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:100px;" /><span class="material-icons" style="font-size:16px;color:var(--teal);cursor:pointer;">calendar_month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">To Date <span style="color:var(--text-muted);font-weight:400;">MM/DD/YYYY</span></label>
+                <div style="display:flex;align-items:center;gap:2px;"><input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:100px;" /><span class="material-icons" style="font-size:16px;color:var(--teal);cursor:pointer;">calendar_month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">Status</label>
+                <select style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 22px 0 8px;font-size:12px;font-family:var(--font);outline:none;appearance:none;background:white url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;) no-repeat right 4px center;width:90px;"><option>Select</option><option>Accepted</option><option>Pending</option></select>
+              </div>
+              <button class="gc-btn gc-btn-primary" style="height:30px;"><span class="material-icons" style="font-size:14px;">search</span> Search</button>
+              <button class="gc-btn gc-btn-text" style="font-size:12px;"><span class="material-icons" style="font-size:14px;">close</span> Clear</button>
+            </div>
+          </div>
+
+          <!-- Toolbar -->
+          <div style="display:flex;align-items:center;gap:10px;font-size:11px;margin-bottom:4px;">
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">send</span> Refer</span>
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">history</span> Audit History</span>
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">check_box</span> Bulk Complete</span>
+          </div>
+
+          <!-- Outstanding Activities table -->
+          <div class="gc-table-wrap">
+            <div style="overflow-x:auto;">
+              <table class="gc-table">
+                <thead><tr>
+                  <th style="width:28px;"><input type="checkbox" /></th>
+                  <th>Activity Type</th>
+                  <th>Delivery Mode</th>
+                  <th>Priority</th>
+                  <th>Follow up Date</th>
+                  <th>Due Date</th>
+                  <th>Call Time</th>
+                  <th>Script Name</th>
+                  <th>Eligibility</th>
+                  <th>Program Name</th>
+                  <th>Assigned By</th>
+                  <th>Reassigned By</th>
+                  <th>Status</th>
+                  <th>Assigned To / WQ</th>
+                  <th>Notes</th>
+                  <th>Created On</th>
+                  <th style="width:80px;">Actions</th>
+                </tr></thead>
+                <tbody id="outstandingTbody3">
+                </tbody>
+              </table>
+            </div>
+            <div class="gc-table-footer">
+              <div class="gc-pager-btn">«</div><div class="gc-pager-btn">‹</div><div class="gc-pager-btn active">1</div><div class="gc-pager-btn">›</div><div class="gc-pager-btn">»</div>
+              <select style="font-size:11px;border:1px solid var(--border);border-radius:var(--r-sm);padding:1px 4px;margin-left:4px;"><option>20</option></select>
+              <span>items per page</span>
+              <span style="margin-left:auto;font-size:11px;">1 - 3 of 3 items &nbsp;<span class="material-icons" style="font-size:13px;color:var(--text-muted);cursor:pointer;">refresh</span></span>
+            </div>
+          </div>
+
+          </div><!-- /oa-option-3 -->
 
         </div>
 
@@ -3725,6 +3877,7 @@ function openScriptResponseModal() {
       tr.style.background = '#FFFDE7';
       tr.innerHTML = '<td><input type="checkbox" /></td>' +
         '<td>' + item.activityType + '</td>' +
+        '<td>N/A</td>' +
         '<td></td>' +
         '<td>High</td>' +
         '<td>' + item.dateStr + '</td>' +
@@ -3739,7 +3892,6 @@ function openScriptResponseModal() {
         '<td>Beatrice Kanya : All Access Admin</td>' +
         '<td>' + item.notesVal + '</td>' +
         '<td style="font-size:10px;">' + item.createdStr + '</td>' +
-        '<td>' + (item.isAssessment ? '<span class="material-icons" style="font-size:16px;color:#388e3c;">check</span>' : '') + '</td>' +
         '<td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td>';
       tbody.insertBefore(tr, tbody.firstChild);
       setTimeout(function() { tr.style.transition = 'background 1.5s'; tr.style.background = ''; }, 100);
@@ -3981,6 +4133,7 @@ function openScriptResponseModal() {
       otr.style.background = '#FFFDE7';
       otr.innerHTML = '<td><input type="checkbox" /></td>' +
         '<td>' + activityTypeVal + '</td>' +
+        '<td>N/A</td>' +
         '<td></td>' +
         '<td>High</td>' +
         '<td>' + dateStr + '</td>' +
@@ -3993,7 +4146,6 @@ function openScriptResponseModal() {
         '<td>Beatrice Kanya : All Access Admin</td>' +
         '<td>' + (notesVal || 'N/A') + '</td>' +
         '<td style="font-size:10px;">' + createdStr + '</td>' +
-        '<td>' + (activityTypeVal.toLowerCase().indexOf('assessment') > -1 ? '<span class="material-icons" style="font-size:16px;color:#388e3c;">check</span>' : '') + '</td>' +
         '<td><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> ' +
         '<span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> ' +
         '<span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td>';
@@ -4206,7 +4358,10 @@ function openScriptResponseModal() {
   function _sr(script,date,by,status,complete,program,score,actType,outcome,dur){return '<tr><td><input type="checkbox"/></td><td><a href="#" style="color:var(--link);font-size:11px;">'+script+'</a></td><td>'+date+'</td><td>'+by+'</td><td>'+status+'</td><td>'+complete+'</td><td>N/A</td><td>'+program+'</td><td>'+score+'</td><td>'+actType+'</td><td><a href="#" style="color:var(--link);">'+outcome+'</a></td><td>'+dur+'</td><td></td><td>'+_SDOC+'</td></tr>';}
   function _gr(date,by,type,outcome){return '<tr><td>'+date+'</td><td>'+by+'</td><td>N/A</td><td>N/A</td><td>'+type+'</td><td>N/A</td><td>N/A</td><td><a href="#" style="color:var(--link);">'+outcome+'</a></td><td>'+_VIS+'</td><td>'+_DEL+'</td></tr>';}
   function _gs(sched,by,type){return '<tr><td>N/A</td><td>N/A</td><td>'+sched+'</td><td>'+by+'</td><td>'+type+'</td><td>N/A</td><td>N/A</td><td><a href="#" style="color:var(--link);">Scheduled</a></td><td>'+_VIS+'</td><td>'+_DEL+'</td></tr>';}
-  function _or(type,priority,followUp,callTime,created){return '<tr><td><input type="checkbox"/></td><td>'+type+'</td><td></td><td>'+priority+'</td><td>'+followUp+'</td><td>N/A</td><td>'+callTime+'</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">'+created+'</td><td></td><td style="white-space:nowrap;">'+_ACT+'</td></tr>';}
+  function _or(type,priority,followUp,callTime,created,contactMethod,memberChecklist){var cm=contactMethod||'N/A';var mc=memberChecklist?'<span class="material-icons" style="font-size:18px;color:#388e3c;">check_circle</span>':'';return '<tr><td><input type="checkbox"/></td><td>'+type+'</td><td>'+cm+'</td><td style="text-align:center;">'+mc+'</td><td>'+priority+'</td><td>'+followUp+'</td><td>N/A</td><td>'+callTime+'</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">'+created+'</td><td style="white-space:nowrap;">'+_ACT+'</td></tr>';}
+  var _WF_LOGO = '<img src="assets/Wellframe/Wellframe_Shorthand_Logo_Color.svg" alt="Wellframe" style="height:18px;vertical-align:middle;" />';
+  function _or3(type,priority,followUp,callTime,created,contactMethod,memberChecklist){var logo=(contactMethod==='Wellframe')?_WF_LOGO:(contactMethod||'N/A');var label=memberChecklist?'<span class="gc-tip" data-tip="This appears on the Member\'s App" style="font-size:11px;margin-left:6px;white-space:nowrap;">Shown to Member</span>':'<span class="gc-tip" data-tip="This does not appear on the Member\'s App" style="font-size:11px;margin-left:6px;white-space:nowrap;">Hidden from Member</span>';var cm='<div style="display:flex;align-items:center;">'+logo+label+'</div>';return '<tr><td><input type="checkbox"/></td><td>'+type+'</td><td>'+cm+'</td><td>'+priority+'</td><td>'+followUp+'</td><td>N/A</td><td>'+callTime+'</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">'+created+'</td><td style="white-space:nowrap;">'+_ACT+'</td></tr>';}
+  function _or2(type,priority,followUp,callTime,created,contactMethod,memberChecklist){var cm=contactMethod||'N/A';var vis=memberChecklist?'<div>'+cm+'</div><div style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;white-space:nowrap;"><span class="material-icons" style="font-size:14px;">visibility</span>Visible to member</div>':'<div>'+cm+'</div><div style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;white-space:nowrap;"><span class="material-icons" style="font-size:14px;">visibility_off</span>Not visible to member</div>';return '<tr><td><input type="checkbox"/></td><td>'+type+'</td><td>'+vis+'</td><td>'+priority+'</td><td>'+followUp+'</td><td>N/A</td><td>'+callTime+'</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">'+created+'</td><td style="white-space:nowrap;">'+_ACT+'</td></tr>';}
   function _ar(badgeCls,status,desc,source,date){return '<tr><td><input type="checkbox"/></td><td><span class="gc-badge '+badgeCls+'">'+status+'</span></td><td>'+desc+'</td><td>'+source+'</td><td>'+date+'</td></tr>';}
 
   var memberTabData = {
@@ -4296,8 +4451,19 @@ function openScriptResponseModal() {
         _gs('05/03/2026','Beatrice Kanya','Annual Physical Follow-Up')
       ],
       outstandingActivities: [
-        _or('Fall Prevention PT Coordination','Medium','04/07/2026','09:00','03/21/2026 02:30:00'),
-        _or('Annual Physical — Pre-Visit Outreach','Low','05/01/2026','10:00','03/10/2026 10:45:00')
+        _or('Health Risk Assessment','High','05/27/2026','09:00','05/20/2026 08:00:00','Wellframe',true),
+        _or('Health Risk Assessment','High','06/03/2026','09:00','05/20/2026 08:00:00','Wellframe',false),
+        _or('Health Risk Assessment','High','06/10/2026','09:00','05/20/2026 08:00:00','Wellframe',false)
+      ],
+      outstandingActivities2: [
+        _or2('Health Risk Assessment','High','05/27/2026','09:00','05/20/2026 08:00:00','Wellframe',true),
+        _or2('Health Risk Assessment','High','06/03/2026','09:00','05/20/2026 08:00:00','Wellframe',false),
+        _or2('Health Risk Assessment','High','06/10/2026','09:00','05/20/2026 08:00:00','Wellframe',false)
+      ],
+      outstandingActivities3: [
+        _or3('Health Risk Assessment','High','05/27/2026','09:00','05/20/2026 08:00:00','Wellframe',true),
+        _or3('Health Risk Assessment','High','06/03/2026','09:00','05/20/2026 08:00:00','Wellframe',false),
+        _or3('Health Risk Assessment','High','06/10/2026','09:00','05/20/2026 08:00:00','Wellframe',false)
       ],
       memberAlerts: [
         _ar('gc-badge-danger','New','Fall Event — Self-reported stair fall','Member self-reported a fall on 03/20/2026 while descending stairs at home. No injury sustained. STEADI fall risk assessment completed 03/21/2026: score 9 (moderate-high). Home safety plan updated. PT referral initiated.','03/21/2026'),
@@ -4389,10 +4555,26 @@ function openScriptResponseModal() {
       outTbody.innerHTML = d.outstandingActivities.join('');
       dynamicRows.forEach(function(row) { outTbody.appendChild(row); });
     }
+    var outTbody2 = document.getElementById('outstandingTbody2');
+    if (outTbody2) outTbody2.innerHTML = (d.outstandingActivities2 || d.outstandingActivities).join('');
+    var outTbody3 = document.getElementById('outstandingTbody3');
+    if (outTbody3) outTbody3.innerHTML = (d.outstandingActivities3 || d.outstandingActivities).join('');
     pendingOutstandingActivities = [];
     var alertsTbody = document.querySelector('#artab-member-alerts .gc-table tbody');
     if (alertsTbody) alertsTbody.innerHTML = d.memberAlerts.join('');
   }
+
+  window.switchOAOption = function(n) {
+    [1,2,3].forEach(function(i) {
+      var panel = document.getElementById('oa-option-' + i);
+      var btn = document.querySelector('[data-oa-option="' + i + '"]');
+      if (panel) panel.style.display = (i === n) ? '' : 'none';
+      if (btn) {
+        btn.style.background = (i === n) ? '#6750A4' : '#EDE9F6';
+        btn.style.color = (i === n) ? '#fff' : '#6750A4';
+      }
+    });
+  };
 
   // Track current member
   var currentMemberKey = 'jackson-thomas';
@@ -5335,7 +5517,8 @@ function openScriptResponseModal() {
           tr.style.background = '#E8F5E9';
           tr.innerHTML = '<td><input type="checkbox" /></td>' +
             '<td>' + item.assessment + '</td>' +
-            '<td></td><td>High</td>' +
+            '<td>Wellframe</td><td></td>' +
+            '<td>High</td>' +
             '<td>' + (item.date || dateStr) + '</td>' +
             '<td>N/A</td><td>' + timeStr + '</td>' +
             '<td>N/A</td><td>N/A</td><td>N/A</td>' +
@@ -5344,7 +5527,6 @@ function openScriptResponseModal() {
             '<td>Beatrice Kanya : All Access Admin</td>' +
             '<td>Completed via Wellframe</td>' +
             '<td style="font-size:10px;">' + createdStr + '</td>' +
-            '<td><span class="material-icons" style="font-size:16px;color:#388e3c;">check</span></td>' +
             '<td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td>';
           outTbody.insertBefore(tr, outTbody.firstChild);
         }
