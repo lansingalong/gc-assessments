@@ -564,7 +564,7 @@
       </div>
       <div class="dash-filter-bar">
         <label style="font-weight:700;color:var(--text-label);">Assigned Type</label>
-        <select><option>Primary Care Members</option></select>
+        <select id="assignedTypeFilter" onchange="filterMembersByAssignedType(this.value)"><option value="primary">Primary Care Members</option><option value="all">All Assigned</option></select>
         <label style="font-weight:700;color:var(--text-label);">Enrollment Status</label>
         <select><option>All Members</option></select>
         <label style="font-weight:700;color:var(--text-label);">Risks</label>
@@ -586,7 +586,7 @@
               <th style="padding:4px 8px;">Program Name</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="myMembersTbody">
             <tr>
               <td style="padding:4px 8px;"><span class="material-icons" style="font-size:14px;color:var(--teal);">check_circle</span></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Active</a></td>
@@ -599,7 +599,7 @@
               <td style="padding:4px 8px;">01/15/2024</td>
               <td style="padding:4px 8px;">Diabetes Management</td>
             </tr>
-            <tr>
+            <tr data-assigned-type="cardiac">
               <td style="padding:4px 8px;"><span class="material-icons" style="font-size:14px;color:var(--teal);">check_circle</span></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Active</a></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link member-link" data-member="maria-rivera">Rivera</a></td>
@@ -607,8 +607,8 @@
               <td style="padding:4px 8px;">MBR-2024-1203</td>
               <td style="padding:4px 8px;">08/22/1975</td>
               <td style="padding:4px 8px;">Medium</td>
-              <td style="padding:4px 8px;">04/05/2026</td>
-              <td style="padding:4px 8px;">03/01/2025</td>
+              <td style="padding:4px 8px;">N/A</td>
+              <td style="padding:4px 8px;">N/A</td>
               <td style="padding:4px 8px;">Cardiac Rehab</td>
             </tr>
             <tr>
@@ -837,31 +837,37 @@
             <tr>
               <th style="padding:4px 8px;width:28px;"><input type="checkbox"></th>
               <th style="padding:4px 8px;">Member Name</th>
+              <th style="padding:4px 8px;">Activity Type</th>
+              <th style="padding:4px 8px;">Scheduled Date</th>
               <th style="padding:4px 8px;">Refer Date</th>
-              <th style="padding:4px 8px;">Refer by</th>
-              <th style="padding:4px 8px;">Refer To</th>
+              <th style="padding:4px 8px;">Assigned By</th>
+              <th style="padding:4px 8px;">Priority</th>
               <th style="padding:4px 8px;">Status</th>
               <th style="padding:4px 8px;">WQ</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td style="padding:4px 8px;"><input type="checkbox"></td>
-              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Adam Eve</a></td>
-              <td style="padding:4px 8px;">07/25/2025</td>
-              <td style="padding:4px 8px;">Vidya Pitta</td>
-              <td style="padding:4px 8px;">Beatrice Kanya</td>
-              <td style="padding:4px 8px;">Pending</td>
-              <td style="padding:4px 8px;"></td>
-            </tr>
+          <tbody id="requestReceivedTbody">
             <tr>
               <td style="padding:4px 8px;"><input type="checkbox"></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Robert Chen</a></td>
-              <td style="padding:4px 8px;">03/18/2026</td>
-              <td style="padding:4px 8px;">Jennifer Reyes</td>
+              <td style="padding:4px 8px;">Assessment- Fall Prevention</td>
+              <td style="padding:4px 8px;">04/10/2026</td>
+              <td style="padding:4px 8px;">04/10/2026</td>
               <td style="padding:4px 8px;">Beatrice Kanya</td>
+              <td style="padding:4px 8px;">N/A</td>
+              <td style="padding:4px 8px;">Complete</td>
+              <td style="padding:4px 8px;"><span style="background:#005d9f;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;">WQ</span></td>
+            </tr>
+            <tr>
+              <td style="padding:4px 8px;"><input type="checkbox"></td>
+              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Sarah Williams</a></td>
+              <td style="padding:4px 8px;">Assessment- Maternal Health</td>
+              <td style="padding:4px 8px;">04/15/2026</td>
+              <td style="padding:4px 8px;">04/15/2026</td>
+              <td style="padding:4px 8px;">Beatrice Kanya</td>
+              <td style="padding:4px 8px;">High</td>
               <td style="padding:4px 8px;">Pending</td>
-              <td style="padding:4px 8px;"></td>
+              <td style="padding:4px 8px;"><span style="background:#005d9f;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;">WQ</span></td>
             </tr>
           </tbody>
         </table>
@@ -3900,6 +3906,17 @@ function openScriptResponseModal() {
   }
 
   // Show dashboard / hide member view (or toggle)
+  window.filterMembersByAssignedType = function(val) {
+    var rows = document.querySelectorAll('#myMembersTbody tr');
+    rows.forEach(function(row) {
+      if (val === 'all') {
+        row.style.display = (row.dataset.assignedType === 'cardiac') ? '' : 'none';
+      } else {
+        row.style.display = (!row.dataset.assignedType) ? '' : 'none';
+      }
+    });
+  };
+
   function showDashboard() {
     homeDash.style.display = '';
     memberView.style.display = 'none';
@@ -5552,6 +5569,69 @@ function openScriptResponseModal() {
     if (e.key === 'suki-note-ready' && e.newValue && window._gcOpenSukiNote) {
       localStorage.removeItem('suki-note-ready');
       window._gcOpenSukiNote(e.newValue);
+    }
+  });
+
+  // Listen for assessment completion from m-unauthenticated and mark Maria Rivera as Completed
+  function handleAssessmentCompleted(assessmentType) {
+    var tbody = document.getElementById('requestReceivedTbody');
+    if (!tbody) return;
+    // Avoid duplicate rows
+    var existing = tbody.querySelectorAll('tr');
+    for (var i = 0; i < existing.length; i++) {
+      if (existing[i].dataset.mariaCompleted) return;
+    }
+    var now = new Date();
+    var p = function(n) { return String(n).padStart(2, '0'); };
+    var dateStr = p(now.getMonth()+1)+'/'+p(now.getDate())+'/'+now.getFullYear();
+    var tr = document.createElement('tr');
+    tr.dataset.mariaCompleted = '1';
+    tr.style.background = '#E8F5E9';
+    tr.innerHTML =
+      '<td style="padding:4px 8px;"><input type="checkbox"></td>' +
+      '<td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Maria Rivera</a></td>' +
+      '<td style="padding:4px 8px;">' + (assessmentType || 'Health Risk Assessment') + '</td>' +
+      '<td style="padding:4px 8px;">' + dateStr + '</td>' +
+      '<td style="padding:4px 8px;">' + dateStr + '</td>' +
+      '<td style="padding:4px 8px;">Beatrice Kanya</td>' +
+      '<td style="padding:4px 8px;">High</td>' +
+      '<td style="padding:4px 8px;"><span style="color:#2e7d32;font-weight:600;display:inline-flex;align-items:center;gap:3px;"><span class="material-icons" style="font-size:13px;">check_circle</span>Complete</span></td>' +
+      '<td style="padding:4px 8px;"><span style="background:#005d9f;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;">WQ</span></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  }
+
+  // Check on load in case already completed
+  (function() {
+    var val = localStorage.getItem('assessment-completed');
+    if (val) handleAssessmentCompleted(val);
+  })();
+
+  // BroadcastChannel — works same-origin across iframes in the same tab
+  try {
+    var _assessmentBc = new BroadcastChannel('gc_assessment');
+    console.log('[cwf] BroadcastChannel gc_assessment listening');
+    _assessmentBc.onmessage = function(e) {
+      console.log('[cwf] BroadcastChannel received', e.data);
+      if (e.data && e.data.type === 'ASSESSMENT_COMPLETED') {
+        handleAssessmentCompleted(e.data.assessmentType);
+      }
+    };
+  } catch(err) { console.warn('[cwf] BroadcastChannel failed', err); }
+
+  // storage event — fires when another context on same origin writes localStorage
+  window.addEventListener('storage', function(e) {
+    console.log('[cwf] storage event', e.key, e.newValue);
+    if (e.key === 'assessment-completed-ts' && e.newValue) {
+      var val = localStorage.getItem('assessment-completed');
+      if (val) handleAssessmentCompleted(val);
+    }
+  });
+
+  // postMessage fallback
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'ASSESSMENT_COMPLETED') {
+      console.log('[cwf] postMessage received', e.data);
+      handleAssessmentCompleted(e.data.assessmentType);
     }
   });
 

@@ -492,7 +492,7 @@
       </div>
       <div class="dash-filter-bar">
         <label style="font-weight:700;color:var(--text-label);">Assigned Type</label>
-        <select><option>Primary Care Members</option></select>
+        <select id="assignedTypeFilter" onchange="filterMembersByAssignedType(this.value)"><option value="all">All Assigned</option><option value="primary" selected>Primary Care Members</option><option value="careteam">Care Team Members</option></select>
         <label style="font-weight:700;color:var(--text-label);">Enrollment Status</label>
         <select><option>All Members</option></select>
         <label style="font-weight:700;color:var(--text-label);">Risks</label>
@@ -514,7 +514,7 @@
               <th style="padding:4px 8px;">Program Name</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="myMembersTbody">
             <tr>
               <td style="padding:4px 8px;"><span class="material-icons" style="font-size:14px;color:var(--teal);">check_circle</span></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Active</a></td>
@@ -527,7 +527,7 @@
               <td style="padding:4px 8px;">01/15/2024</td>
               <td style="padding:4px 8px;">Diabetes Management</td>
             </tr>
-            <tr>
+            <tr data-assigned-type="all">
               <td style="padding:4px 8px;"><span class="material-icons" style="font-size:14px;color:var(--teal);">check_circle</span></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Active</a></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link member-link" data-member="maria-rivera">Rivera</a></td>
@@ -535,8 +535,8 @@
               <td style="padding:4px 8px;">MBR-2024-8516</td>
               <td style="padding:4px 8px;">08/22/1975</td>
               <td style="padding:4px 8px;">--</td>
-              <td style="padding:4px 8px;">--</td>
-              <td style="padding:4px 8px;">03/01/2025</td>
+              <td style="padding:4px 8px;">N/A</td>
+              <td style="padding:4px 8px;">N/A</td>
               <td style="padding:4px 8px;">Health Risk Assessment</td>
             </tr>
             <tr>
@@ -754,29 +754,7 @@
               <th style="padding:4px 8px;">WQ</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td style="padding:4px 8px;"><input type="checkbox"></td>
-              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Robert Chen</a></td>
-              <td style="padding:4px 8px;">Assessment- Fall Prevention</td>
-              <td style="padding:4px 8px;">04/10/2026</td>
-              <td style="padding:4px 8px;">04/10/2026</td>
-              <td style="padding:4px 8px;">Beatrice Kanya</td>
-              <td style="padding:4px 8px;">N/A</td>
-              <td style="padding:4px 8px;">Complete</td>
-              <td style="padding:4px 8px;"><span style="background:#315E7B;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:2px;cursor:pointer;">WQ</span></td>
-            </tr>
-            <tr>
-              <td style="padding:4px 8px;"><input type="checkbox"></td>
-              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Sarah Williams</a></td>
-              <td style="padding:4px 8px;">Assessment- Maternal Health</td>
-              <td style="padding:4px 8px;">04/15/2026</td>
-              <td style="padding:4px 8px;">04/15/2026</td>
-              <td style="padding:4px 8px;">Beatrice Kanya</td>
-              <td style="padding:4px 8px;">High</td>
-              <td style="padding:4px 8px;">Pending</td>
-              <td style="padding:4px 8px;"><span style="background:#315E7B;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:2px;cursor:pointer;">WQ</span></td>
-            </tr>
+          <tbody id="requestReceivedTbody">
           </tbody>
         </table>
         <table id="rr-table-careplan" class="gc-table" style="font-size:11px;display:none;">
@@ -792,15 +770,6 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td style="padding:4px 8px;"><input type="checkbox"></td>
-              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Sarah Williams</a></td>
-              <td style="padding:4px 8px;">Gestational Diabetes</td>
-              <td style="padding:4px 8px;">Member/caregiver has a plan to manage blood glucose levels through delivery.</td>
-              <td style="padding:4px 8px;">Explore dietary support and connect with perinatal care coordinator for weekly check-ins.</td>
-              <td style="padding:4px 8px;">04/15/2026</td>
-              <td style="padding:4px 8px;">07/15/2026</td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -816,7 +785,7 @@
           <option>10</option><option>25</option><option>50</option>
         </select>
         <span style="font-size:10px;color:var(--text-muted);">items per page</span>
-        <span style="margin-left:auto;font-size:11px;">1 - 2 of 2 items</span>
+        <span style="margin-left:auto;font-size:11px;">0 items</span>
         <span class="material-icons" style="font-size:14px;cursor:pointer;color:var(--text-muted);margin-left:4px;">refresh</span>
       </div>
     </div>
@@ -3975,6 +3944,19 @@ window._gcAllAssessmentQA = {
     if (calPage) calPage.style.display = 'none';
   }
 
+  window.filterMembersByAssignedType = function(val) {
+    var rows = document.querySelectorAll('#myMembersTbody tr');
+    rows.forEach(function(row) {
+      if (val === 'all') {
+        row.style.display = row.dataset.assignedType === 'all' ? '' : 'none';
+      } else if (val === 'primary') {
+        row.style.display = row.dataset.assignedType === 'all' ? 'none' : '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  };
+
   function showDashboard() {
     hideAllPages();
     homeDash.style.display = '';
@@ -4701,6 +4683,7 @@ window._gcAllAssessmentQA = {
 
   showDashboard();
   populateTabs('jackson-thomas');
+  filterMembersByAssignedType('primary');
 
   // ═══ Live calendar ═══
   function initCalendar() {
@@ -5094,6 +5077,28 @@ window._gcAllAssessmentQA = {
         priority: 'High'
       };
       d.carePlanOGI.push({ assessmentType: assessmentType, opportunity: tpl.opportunity, goal: tpl.goal, condition: tpl.condition, intervention: tpl.intervention, priority: tpl.priority });
+    }
+
+    // Add row to Request Received
+    var rrTbody = document.getElementById('requestReceivedTbody');
+    if (rrTbody) {
+      var existing = rrTbody.querySelector('tr[data-maria-completed]');
+      if (existing) existing.remove();
+      var tr = document.createElement('tr');
+      tr.dataset.mariaCompleted = '1';
+      tr.style.background = '#E8F5E9';
+      tr.innerHTML =
+        '<td style="padding:4px 8px;"><input type="checkbox"></td>' +
+        '<td style="padding:4px 8px;"><a href="#" class="gc-kv-link member-link" data-member="maria-rivera">Maria Rivera</a></td>' +
+        '<td style="padding:4px 8px;">' + (assessmentType || 'Health Risk Assessment') + '</td>' +
+        '<td style="padding:4px 8px;">' + createdStr + '</td>' +
+        '<td style="padding:4px 8px;">' + createdStr + '</td>' +
+        '<td style="padding:4px 8px;">Beatrice Kanya</td>' +
+        '<td style="padding:4px 8px;">High</td>' +
+        '<td style="padding:4px 8px;"><span style="color:#2e7d32;font-weight:600;">Complete</span></td>' +
+        '<td style="padding:4px 8px;"><span style="background:#315E7B;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:2px;">WQ</span></td>';
+      rrTbody.insertBefore(tr, rrTbody.firstChild);
+      setTimeout(function(row) { row.style.transition = 'background 1.5s'; row.style.background = ''; }.bind(null, tr), 100);
     }
 
     // Re-render and navigate to Activity Summary if on Maria Rivera's profile
