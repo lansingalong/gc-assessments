@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GuidingCare - Member Profile</title>
-<link rel="icon" type="image/png" href="assets/_Custom/Wordmark.png">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
@@ -36,14 +35,14 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); color: var(--text-primary); background: #EBEBEB; font-size: 13px; line-height: 1.5; }
+  body { font-family: var(--font); color: var(--text-primary); background: var(--white); font-size: 13px; line-height: 1.5; }
 
   /* ════════════════════════════════
      ACTUAL GC COMPONENTS
   ════════════════════════════════ */
 
   /* ── Global nav (two-row) ── */
-  .gc-nav-outer { overflow: hidden; border: 1px solid var(--border); }
+  .gc-nav-outer { overflow: hidden; border: 1px solid var(--border); width: 100%; box-sizing: border-box; }
   .gc-nav-top { background: var(--white); display: flex; align-items: center; gap: 0; padding: 0 14px; height: 44px; border-bottom: 1px solid var(--border-light); }
   .gc-nav-logo { margin-right: 16px; display: flex; align-items: center; }
   .gc-nav-logo img { height: 31px; }
@@ -117,6 +116,12 @@
   .gc-banner-edit { color: var(--link); font-size: 12px; cursor: pointer; margin-left: 4px; text-decoration: none; }
   .gc-banner-dob { color: #555; font-size: 13px; }
   .gc-banner-expand { margin-left: auto; cursor: pointer; color: #315E7B; }
+
+  /* ── Simple tooltip ── */
+  .gc-tip { position:relative; display:inline-flex; align-items:center; cursor:default; }
+  .gc-tip::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#212121; color:#fff; font-size:11px; font-family:var(--font); white-space:nowrap; padding:5px 10px; border-radius:4px; pointer-events:none; opacity:0; transition:opacity 0.15s; z-index:9999; }
+  .gc-tip::before { content:''; position:absolute; bottom:calc(100% + 1px); left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#212121; pointer-events:none; opacity:0; transition:opacity 0.15s; z-index:9999; }
+  .gc-tip:hover::after, .gc-tip:hover::before { opacity:1; }
 
   /* ── Left sidebar nav (collapsed, icon-only, per-item hover tooltip) ── */
   .gc-left-nav { width: 44px; min-width: 44px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 4px 0; overflow: visible; position: relative; z-index: 50; }
@@ -222,13 +227,13 @@
 
   /* ── App layout ── */
   .app-body { display: flex; min-height: calc(100vh - 126px); }
-  .main-content { flex: 1; background: #EBEBEB; display: flex; flex-direction: column; }
+  .main-content { flex: 1; background: var(--white); display: flex; flex-direction: column; min-width: 0; }
   .content-tabs-area { background: var(--white); border-bottom: 1px solid var(--border); }
   .content-body { flex: 1; padding: 12px 16px; overflow-y: auto; background: var(--white); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
   .left-panel { display: none; }
-  .left-panel.active { display: block; }
+  .left-panel.active { display: flex; flex-direction: column; flex: 1; }
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .detail-grid-full { grid-column: 1 / -1; }
 
@@ -355,6 +360,94 @@
   .gc-footer-right { display: flex; align-items: center; gap: 12px; }
   .gc-footer-health { display: flex; align-items: center; gap: 4px; color: #2E7D32; }
   .gc-footer-health .material-icons { font-size: 14px; }
+
+  /* ── Wellframe Mobile Panel ── */
+  #wellframe-panel-content { padding: 0 !important; background: #EBEBEB !important; display: flex; flex-direction: column; }
+  .wfm-hd { display:flex; align-items:center; gap:10px; padding:12px 16px; background:#fff; border-bottom:1px solid var(--border-light); flex-shrink:0; }
+  .wfm-hd-logo { width:26px; height:26px; object-fit:contain; flex-shrink:0; }
+  .wfm-hd-title { font-size:13px; font-weight:700; color:var(--teal-dark); }
+  .wfm-hd-sub { font-size:11px; color:var(--text-muted); }
+  .wfm-switcher { display:flex; gap:6px; padding:8px 16px; background:#fff; border-bottom:1px solid var(--border-light); flex-shrink:0; }
+  .wfm-sw-btn { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:20px; border:1px solid var(--border); font-size:11px; font-weight:600; cursor:pointer; background:#fff; color:var(--text-secondary); }
+  .wfm-sw-btn .material-icons { font-size:13px; }
+  .wfm-sw-btn.active { background:var(--teal); color:#fff; border-color:var(--teal); }
+  .wfm-device-wrap { flex:1; display:flex; justify-content:center; padding:20px 16px 28px; overflow-y:auto; }
+  .wfm-device { width:296px; background:#18181B; border-radius:44px; padding:10px; box-shadow:0 16px 48px rgba(0,0,0,0.4),inset 0 0 0 1px #3a3a3a; flex-shrink:0; }
+  .wfm-screen-outer { background:#F2F8FA; border-radius:36px; overflow:hidden; }
+  .wfm-status { background:#F2F8FA; display:flex; justify-content:space-between; align-items:center; padding:10px 20px 0; height:44px; }
+  .wfm-time { font-size:15px; font-weight:600; color:#161B1F; letter-spacing:0.2px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-status-icons { display:flex; align-items:center; gap:4px; color:#161B1F; }
+  .wfm-status-icons .material-icons { font-size:14px; }
+  .wfm-screen-scroll { overflow-y:auto; max-height:440px; }
+  .wfm-screen { display:none; }
+  .wfm-screen.wfm-active { display:block; }
+  .wfm-tab-bar { background:#fff; border-top:1px solid #D9E3E7; display:flex; padding:8px 0 22px; }
+  .wfm-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; border:none; background:none; }
+  .wfm-tab .material-icons { font-size:22px; color:#4E5961; }
+  .wfm-tab-lbl { font-size:9px; color:#4E5961; letter-spacing:0.05px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-tab.wfm-tab-on .material-icons { color:#0080A3; }
+  .wfm-tab.wfm-tab-on .wfm-tab-lbl { color:#0080A3; }
+  .wfm-page { padding:4px 16px 12px; }
+  .wfm-page-title { font-family:Georgia,'Times New Roman',serif; font-size:22px; color:#161B1F; margin-bottom:18px; padding-top:10px; letter-spacing:0.3px; }
+  .wfm-sec-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .wfm-sec-title { font-size:17px; color:#161B1F; font-weight:400; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-add-btn { display:inline-flex; align-items:center; gap:4px; background:#fff; border-radius:4px; padding:5px 10px; font-size:12px; color:#0E98BE; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.15); font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-add-btn .material-icons { font-size:14px; }
+  .wfm-step-card { background:#fff; border-radius:10px; margin-bottom:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-step-head { display:flex; align-items:center; gap:10px; padding:11px 12px 11px 16px; }
+  .wfm-step-head .material-icons { font-size:20px; color:#0E98BE; }
+  .wfm-step-title { flex:1; font-size:14px; color:#282F35; font-family:system-ui,-apple-system,sans-serif; letter-spacing:-0.2px; }
+  .wfm-step-chev { color:#282F35; }
+  .wfm-step-bar { height:6px; background:#D9E3E7; }
+  .wfm-step-fill { height:100%; background:linear-gradient(to right,#0E98BE,#0080A3); width:41%; }
+  .wfm-task-card { background:#fff; border-radius:10px; margin-bottom:8px; padding:11px 12px; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-task-card.wfm-done { opacity:0.5; }
+  .wfm-task-head { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .wfm-task-head .material-icons { font-size:18px; color:#0E98BE; }
+  .wfm-task-type { font-size:13px; color:#0080A3; font-family:system-ui,-apple-system,sans-serif; letter-spacing:-0.2px; }
+  .wfm-task-main { display:flex; align-items:center; gap:6px; }
+  .wfm-task-title { flex:1; font-size:14px; color:#282F35; line-height:1.3; font-family:system-ui,-apple-system,sans-serif; letter-spacing:-0.2px; }
+  .wfm-task-chev .material-icons { font-size:18px; color:#282F35; }
+  .wfm-task-check .material-icons { font-size:20px; color:#73BE5E; }
+  .wfm-care-tag { display:inline-flex; align-items:center; gap:4px; background:#F0F4F5; border-radius:20px; padding:4px 8px; margin-top:6px; }
+  .wfm-care-tag .material-icons { font-size:11px; color:#0080A3; }
+  .wfm-care-tag-txt { font-size:10px; color:#4E5961; font-weight:500; font-family:system-ui,-apple-system,sans-serif; letter-spacing:0.04px; }
+  .wfm-prof-hd { background:#fff; border-bottom:1px solid #D9E3E7; padding:10px 16px 14px; }
+  .wfm-prof-title-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .wfm-prof-title { font-family:Georgia,'Times New Roman',serif; font-size:22px; color:#161B1F; }
+  .wfm-prof-scroll { padding:0 16px 16px; background:#F2F8FA; }
+  .wfm-user-row { display:flex; align-items:center; gap:12px; }
+  .wfm-avatar { width:44px; height:44px; border-radius:22px; background:#0080A3; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; font-weight:700; flex-shrink:0; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-user-name { font-size:17px; font-weight:500; color:#282F35; font-family:system-ui,-apple-system,sans-serif; letter-spacing:-0.3px; }
+  .wfm-user-day { font-size:12px; color:#78868E; margin-top:2px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-prof-sec { font-size:17px; color:#161B1F; font-weight:400; margin:14px 0 8px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-cp-scroll { display:flex; overflow-x:auto; gap:0; margin:0 -16px; padding:4px 16px; }
+  .wfm-cp-card { width:140px; border-radius:10px; overflow:hidden; background:#fff; flex-shrink:0; box-shadow:0 1px 4px rgba(0,0,0,.15); margin-right:10px; }
+  .wfm-cp-top { padding:12px 12px 8px; }
+  .wfm-cp-top .material-icons { font-size:20px; color:#0E98BE; margin-bottom:6px; display:block; }
+  .wfm-cp-title { font-size:13px; font-weight:500; color:#161B1F; line-height:1.3; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-cp-bot { height:56px; display:flex; align-items:center; justify-content:center; }
+  .wfm-ci-card { background:#fff; border-radius:10px; margin-bottom:8px; padding:11px 12px; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-ci-row { display:flex; align-items:center; gap:10px; }
+  .wfm-ci-row .material-icons { font-size:18px; color:#0E98BE; flex-shrink:0; }
+  .wfm-ci-body { flex:1; }
+  .wfm-ci-name { font-size:13px; font-weight:500; color:#282F35; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-ci-sub { font-size:11px; color:#4E5961; margin-top:2px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-ci-prog { display:flex; align-items:center; gap:6px; margin-top:5px; }
+  .wfm-ci-track { flex:1; height:4px; background:#D9E3E7; border-radius:2px; overflow:hidden; }
+  .wfm-ci-fill { height:100%; background:#0080A3; border-radius:2px; }
+  .wfm-ci-pct { font-size:10px; color:#78868E; font-weight:500; font-family:system-ui,-apple-system,sans-serif; min-width:24px; }
+  .wfm-list-card { background:#fff; border-radius:10px; margin-bottom:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-list-row { display:flex; align-items:center; padding:9px 12px; gap:9px; border-bottom:1px solid #F0F4F5; }
+  .wfm-list-row:last-child { border-bottom:none; }
+  .wfm-list-row .material-icons { font-size:17px; color:#0E98BE; flex-shrink:0; }
+  .wfm-list-body { flex:1; min-width:0; }
+  .wfm-list-name { font-size:13px; font-weight:500; color:#282F35; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-list-sub { font-size:11px; color:#4E5961; margin-top:1px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-list-note { font-size:10px; color:#0E98BE; margin-top:1px; font-family:system-ui,-apple-system,sans-serif; }
+  .wfm-add-row { display:flex; align-items:center; gap:8px; background:#fff; border-radius:10px; padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+  .wfm-add-row .material-icons { font-size:18px; color:#0E98BE; }
+  .wfm-add-row-lbl { font-size:13px; color:#0E98BE; font-weight:600; font-family:system-ui,-apple-system,sans-serif; }
 </style>
 </head>
 <body>
@@ -471,7 +564,7 @@
       </div>
       <div class="dash-filter-bar">
         <label style="font-weight:700;color:var(--text-label);">Assigned Type</label>
-        <select><option>Primary Care Members</option></select>
+        <select id="assignedTypeFilter" onchange="filterMembersByAssignedType(this.value)"><option value="primary">Primary Care Members</option><option value="all">All Assigned</option></select>
         <label style="font-weight:700;color:var(--text-label);">Enrollment Status</label>
         <select><option>All Members</option></select>
         <label style="font-weight:700;color:var(--text-label);">Risks</label>
@@ -493,7 +586,7 @@
               <th style="padding:4px 8px;">Program Name</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="myMembersTbody">
             <tr>
               <td style="padding:4px 8px;"><span class="material-icons" style="font-size:14px;color:var(--teal);">check_circle</span></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Active</a></td>
@@ -506,7 +599,7 @@
               <td style="padding:4px 8px;">01/15/2024</td>
               <td style="padding:4px 8px;">Diabetes Management</td>
             </tr>
-            <tr>
+            <tr data-assigned-type="cardiac">
               <td style="padding:4px 8px;"><span class="material-icons" style="font-size:14px;color:var(--teal);">check_circle</span></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Active</a></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link member-link" data-member="maria-rivera">Rivera</a></td>
@@ -514,8 +607,8 @@
               <td style="padding:4px 8px;">MBR-2024-1203</td>
               <td style="padding:4px 8px;">08/22/1975</td>
               <td style="padding:4px 8px;">Medium</td>
-              <td style="padding:4px 8px;">04/05/2026</td>
-              <td style="padding:4px 8px;">03/01/2025</td>
+              <td style="padding:4px 8px;">N/A</td>
+              <td style="padding:4px 8px;">N/A</td>
               <td style="padding:4px 8px;">Cardiac Rehab</td>
             </tr>
             <tr>
@@ -744,31 +837,37 @@
             <tr>
               <th style="padding:4px 8px;width:28px;"><input type="checkbox"></th>
               <th style="padding:4px 8px;">Member Name</th>
+              <th style="padding:4px 8px;">Activity Type</th>
+              <th style="padding:4px 8px;">Scheduled Date</th>
               <th style="padding:4px 8px;">Refer Date</th>
-              <th style="padding:4px 8px;">Refer by</th>
-              <th style="padding:4px 8px;">Refer To</th>
+              <th style="padding:4px 8px;">Assigned By</th>
+              <th style="padding:4px 8px;">Priority</th>
               <th style="padding:4px 8px;">Status</th>
               <th style="padding:4px 8px;">WQ</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td style="padding:4px 8px;"><input type="checkbox"></td>
-              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Adam Eve</a></td>
-              <td style="padding:4px 8px;">07/25/2025</td>
-              <td style="padding:4px 8px;">Vidya Pitta</td>
-              <td style="padding:4px 8px;">Beatrice Kanya</td>
-              <td style="padding:4px 8px;">Pending</td>
-              <td style="padding:4px 8px;"></td>
-            </tr>
+          <tbody id="requestReceivedTbody">
             <tr>
               <td style="padding:4px 8px;"><input type="checkbox"></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Robert Chen</a></td>
-              <td style="padding:4px 8px;">03/18/2026</td>
-              <td style="padding:4px 8px;">Jennifer Reyes</td>
+              <td style="padding:4px 8px;">Assessment- Fall Prevention</td>
+              <td style="padding:4px 8px;">04/10/2026</td>
+              <td style="padding:4px 8px;">04/10/2026</td>
               <td style="padding:4px 8px;">Beatrice Kanya</td>
+              <td style="padding:4px 8px;">N/A</td>
+              <td style="padding:4px 8px;">Complete</td>
+              <td style="padding:4px 8px;"><span style="background:#005d9f;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;">WQ</span></td>
+            </tr>
+            <tr>
+              <td style="padding:4px 8px;"><input type="checkbox"></td>
+              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Sarah Williams</a></td>
+              <td style="padding:4px 8px;">Assessment- Maternal Health</td>
+              <td style="padding:4px 8px;">04/15/2026</td>
+              <td style="padding:4px 8px;">04/15/2026</td>
+              <td style="padding:4px 8px;">Beatrice Kanya</td>
+              <td style="padding:4px 8px;">High</td>
               <td style="padding:4px 8px;">Pending</td>
-              <td style="padding:4px 8px;"></td>
+              <td style="padding:4px 8px;"><span style="background:#005d9f;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;">WQ</span></td>
             </tr>
           </tbody>
         </table>
@@ -836,6 +935,9 @@
     </div>
     <div class="gc-left-item" data-left="packet-log">
       <span class="gc-left-icon"><span class="material-icons">move_to_inbox</span></span><span class="gc-left-label">Packet Log</span>
+    </div>
+    <div class="gc-left-item" data-left="wellframe" role="button" aria-label="Wellframe">
+      <span class="gc-left-icon"><img src="assets/Wellframe/Logomark.png" alt="" aria-hidden="true" style="width:22px;height:22px;object-fit:contain;" /></span><span class="gc-left-label">Wellframe</span>
     </div>
   </nav>
 
@@ -1884,7 +1986,7 @@
               <div style="padding:7px 12px 4px;font-size:12px;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:4px;border-bottom:3px solid #E07820;white-space:nowrap;"><span class="material-icons" style="font-size:14px;">table_chart</span> Care Plan Details</div>
             </div>
           </div>
-          <div style="background:var(--white);min-height:300px;"></div>
+          <div id="cp-overview-body" style="background:var(--white);min-height:300px;"></div>
         </div>
 
         <!-- SUB-PANEL: Care Plan Barriers -->
@@ -2846,11 +2948,15 @@
         <!-- Tab: Outstanding Activities -->
         <div class="ar-tab-panel" id="artab-outstanding-activities" style="display:none;">
 
-          <!-- Sub-tabs -->
-          <div style="display:flex;gap:16px;margin-bottom:12px;font-size:12px;">
-            <span style="font-weight:700;color:var(--text-primary);border-bottom:2px solid var(--text-primary);padding-bottom:4px;cursor:pointer;">Care Staff</span>
-            <span style="color:var(--text-muted);cursor:pointer;">External Care Team</span>
+          <!-- Design option buttons -->
+          <div id="oaOptionTabs" style="display:flex;gap:8px;margin-bottom:16px;font-size:12px;">
+            <button data-oa-option="1" onclick="switchOAOption(1)" style="padding:6px 16px;cursor:pointer;font-weight:600;font-family:var(--font);font-size:12px;border:none;border-radius:20px;background:#6750A4;color:#fff;">Option 1</button>
+            <button data-oa-option="2" onclick="switchOAOption(2)" style="padding:6px 16px;cursor:pointer;font-weight:600;font-family:var(--font);font-size:12px;border:none;border-radius:20px;background:#EDE9F6;color:#6750A4;">Option 2</button>
+            <button data-oa-option="3" onclick="switchOAOption(3)" style="padding:6px 16px;cursor:pointer;font-weight:600;font-family:var(--font);font-size:12px;border:none;border-radius:20px;background:#EDE9F6;color:#6750A4;">Option 3</button>
           </div>
+
+          <!-- ── Option 1 ── -->
+          <div id="oa-option-1">
 
           <!-- Filter bar -->
           <div style="background:var(--surface-light);border:1px solid var(--border);padding:10px 14px;margin-bottom:10px;">
@@ -2890,7 +2996,8 @@
                 <thead><tr>
                   <th style="width:28px;"><input type="checkbox" /></th>
                   <th>Activity Type</th>
-                  <th>MP</th>
+                  <th>Contact Method</th>
+                  <th>Member Visible</th>
                   <th>Priority</th>
                   <th>Follow up Date</th>
                   <th>Due Date</th>
@@ -2904,12 +3011,9 @@
                   <th>Assigned To / WQ</th>
                   <th>Notes</th>
                   <th>Created On</th>
-                  <th>Visible to Member</th>
                   <th style="width:80px;">Actions</th>
                 </tr></thead>
                 <tbody id="outstandingTbody">
-                  <tr><td><input type="checkbox" /></td><td>Follow Up.</td><td></td><td>High</td><td>03/27/2026</td><td>N/A</td><td>07:59</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">03/27/2026 08:00:00</td><td></td><td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td></tr>
-                  <tr><td><input type="checkbox" /></td><td>Assessments - Initial Outreach</td><td></td><td>Medium</td><td>03/20/2026</td><td>N/A</td><td>08:30</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">03/20/2026 07:04:07</td><td></td><td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td></tr>
                 </tbody>
               </table>
             </div>
@@ -2917,9 +3021,153 @@
               <div class="gc-pager-btn">«</div><div class="gc-pager-btn">‹</div><div class="gc-pager-btn active">1</div><div class="gc-pager-btn">›</div><div class="gc-pager-btn">»</div>
               <select style="font-size:11px;border:1px solid var(--border);border-radius:var(--r-sm);padding:1px 4px;margin-left:4px;"><option>20</option></select>
               <span>items per page</span>
-              <span style="margin-left:auto;font-size:11px;">1 - 2 of 2 items &nbsp;<span class="material-icons" style="font-size:13px;color:var(--text-muted);cursor:pointer;">refresh</span></span>
+              <span style="margin-left:auto;font-size:11px;">1 - 3 of 3 items &nbsp;<span class="material-icons" style="font-size:13px;color:var(--text-muted);cursor:pointer;">refresh</span></span>
             </div>
           </div>
+
+          </div><!-- /oa-option-1 -->
+
+          <!-- ── Option 2 ── -->
+          <div id="oa-option-2" style="display:none;">
+
+          <!-- Filter bar -->
+          <div style="background:var(--surface-light);border:1px solid var(--border);padding:10px 14px;margin-bottom:10px;">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">Search for Care Staff</label>
+                <input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:120px;" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">From Date <span style="color:var(--text-muted);font-weight:400;">MM/DD/YYYY</span></label>
+                <div style="display:flex;align-items:center;gap:2px;"><input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:100px;" /><span class="material-icons" style="font-size:16px;color:var(--teal);cursor:pointer;">calendar_month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">To Date <span style="color:var(--text-muted);font-weight:400;">MM/DD/YYYY</span></label>
+                <div style="display:flex;align-items:center;gap:2px;"><input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:100px;" /><span class="material-icons" style="font-size:16px;color:var(--teal);cursor:pointer;">calendar_month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">Status</label>
+                <select style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 22px 0 8px;font-size:12px;font-family:var(--font);outline:none;appearance:none;background:white url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2020/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;) no-repeat right 4px center;width:90px;"><option>Select</option><option>Accepted</option><option>Pending</option></select>
+              </div>
+              <button class="gc-btn gc-btn-primary" style="height:30px;"><span class="material-icons" style="font-size:14px;">search</span> Search</button>
+              <button class="gc-btn gc-btn-text" style="font-size:12px;"><span class="material-icons" style="font-size:14px;">close</span> Clear</button>
+            </div>
+          </div>
+
+          <!-- Toolbar -->
+          <div style="display:flex;align-items:center;gap:10px;font-size:11px;margin-bottom:4px;">
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">send</span> Refer</span>
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">history</span> Audit History</span>
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">check_box</span> Bulk Complete</span>
+          </div>
+
+          <!-- Outstanding Activities table -->
+          <div class="gc-table-wrap">
+            <div style="overflow-x:auto;">
+              <table class="gc-table">
+                <thead><tr>
+                  <th style="width:28px;"><input type="checkbox" /></th>
+                  <th>Activity Type</th>
+                  <th>Digital</th>
+                  <th>Priority</th>
+                  <th>Follow up Date</th>
+                  <th>Due Date</th>
+                  <th>Call Time</th>
+                  <th>Script Name</th>
+                  <th>Eligibility</th>
+                  <th>Program Name</th>
+                  <th>Assigned By</th>
+                  <th>Reassigned By</th>
+                  <th>Status</th>
+                  <th>Assigned To / WQ</th>
+                  <th>Notes</th>
+                  <th>Created On</th>
+                  <th style="width:80px;">Actions</th>
+                </tr></thead>
+                <tbody id="outstandingTbody2">
+                </tbody>
+              </table>
+            </div>
+            <div class="gc-table-footer">
+              <div class="gc-pager-btn">«</div><div class="gc-pager-btn">‹</div><div class="gc-pager-btn active">1</div><div class="gc-pager-btn">›</div><div class="gc-pager-btn">»</div>
+              <select style="font-size:11px;border:1px solid var(--border);border-radius:var(--r-sm);padding:1px 4px;margin-left:4px;"><option>20</option></select>
+              <span>items per page</span>
+              <span style="margin-left:auto;font-size:11px;">1 - 3 of 3 items &nbsp;<span class="material-icons" style="font-size:13px;color:var(--text-muted);cursor:pointer;">refresh</span></span>
+            </div>
+          </div>
+
+          </div><!-- /oa-option-2 -->
+
+          <!-- ── Option 3 ── -->
+          <div id="oa-option-3" style="display:none;">
+
+          <!-- Filter bar -->
+          <div style="background:var(--surface-light);border:1px solid var(--border);padding:10px 14px;margin-bottom:10px;">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">Search for Care Staff</label>
+                <input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:120px;" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">From Date <span style="color:var(--text-muted);font-weight:400;">MM/DD/YYYY</span></label>
+                <div style="display:flex;align-items:center;gap:2px;"><input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:100px;" /><span class="material-icons" style="font-size:16px;color:var(--teal);cursor:pointer;">calendar_month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">To Date <span style="color:var(--text-muted);font-weight:400;">MM/DD/YYYY</span></label>
+                <div style="display:flex;align-items:center;gap:2px;"><input type="text" style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 8px;font-size:12px;font-family:var(--font);outline:none;width:100px;" /><span class="material-icons" style="font-size:16px;color:var(--teal);cursor:pointer;">calendar_month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text-label);">Status</label>
+                <select style="height:28px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 22px 0 8px;font-size:12px;font-family:var(--font);outline:none;appearance:none;background:white url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;) no-repeat right 4px center;width:90px;"><option>Select</option><option>Accepted</option><option>Pending</option></select>
+              </div>
+              <button class="gc-btn gc-btn-primary" style="height:30px;"><span class="material-icons" style="font-size:14px;">search</span> Search</button>
+              <button class="gc-btn gc-btn-text" style="font-size:12px;"><span class="material-icons" style="font-size:14px;">close</span> Clear</button>
+            </div>
+          </div>
+
+          <!-- Toolbar -->
+          <div style="display:flex;align-items:center;gap:10px;font-size:11px;margin-bottom:4px;">
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">send</span> Refer</span>
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">history</span> Audit History</span>
+            <span class="gc-table-action"><span class="material-icons" style="font-size:13px;">check_box</span> Bulk Complete</span>
+          </div>
+
+          <!-- Outstanding Activities table -->
+          <div class="gc-table-wrap">
+            <div style="overflow-x:auto;">
+              <table class="gc-table">
+                <thead><tr>
+                  <th style="width:28px;"><input type="checkbox" /></th>
+                  <th>Activity Type</th>
+                  <th>Delivery Mode</th>
+                  <th>Priority</th>
+                  <th>Follow up Date</th>
+                  <th>Due Date</th>
+                  <th>Call Time</th>
+                  <th>Script Name</th>
+                  <th>Eligibility</th>
+                  <th>Program Name</th>
+                  <th>Assigned By</th>
+                  <th>Reassigned By</th>
+                  <th>Status</th>
+                  <th>Assigned To / WQ</th>
+                  <th>Notes</th>
+                  <th>Created On</th>
+                  <th style="width:80px;">Actions</th>
+                </tr></thead>
+                <tbody id="outstandingTbody3">
+                </tbody>
+              </table>
+            </div>
+            <div class="gc-table-footer">
+              <div class="gc-pager-btn">«</div><div class="gc-pager-btn">‹</div><div class="gc-pager-btn active">1</div><div class="gc-pager-btn">›</div><div class="gc-pager-btn">»</div>
+              <select style="font-size:11px;border:1px solid var(--border);border-radius:var(--r-sm);padding:1px 4px;margin-left:4px;"><option>20</option></select>
+              <span>items per page</span>
+              <span style="margin-left:auto;font-size:11px;">1 - 3 of 3 items &nbsp;<span class="material-icons" style="font-size:13px;color:var(--text-muted);cursor:pointer;">refresh</span></span>
+            </div>
+          </div>
+
+          </div><!-- /oa-option-3 -->
 
         </div>
 
@@ -3335,6 +3583,13 @@
       </div>
     </div>
 
+    <!-- ═══ LEFT PANEL: Wellframe ═══ -->
+    <div class="left-panel" id="panel-wellframe">
+      <div class="content-body" id="wellframe-panel-content">
+        <!-- populated by populateProfile -->
+      </div>
+    </div>
+
     <!-- ═══ LEFT PANEL: Packet Log ═══ -->
     <div class="left-panel" id="panel-packet-log">
       <div class="content-body">
@@ -3628,6 +3883,7 @@ function openScriptResponseModal() {
       tr.style.background = '#FFFDE7';
       tr.innerHTML = '<td><input type="checkbox" /></td>' +
         '<td>' + item.activityType + '</td>' +
+        '<td>N/A</td>' +
         '<td></td>' +
         '<td>High</td>' +
         '<td>' + item.dateStr + '</td>' +
@@ -3642,7 +3898,6 @@ function openScriptResponseModal() {
         '<td>Beatrice Kanya : All Access Admin</td>' +
         '<td>' + item.notesVal + '</td>' +
         '<td style="font-size:10px;">' + item.createdStr + '</td>' +
-        '<td>' + (item.isAssessment ? '<span class="material-icons" style="font-size:16px;color:#388e3c;">check</span>' : '') + '</td>' +
         '<td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td>';
       tbody.insertBefore(tr, tbody.firstChild);
       setTimeout(function() { tr.style.transition = 'background 1.5s'; tr.style.background = ''; }, 100);
@@ -3651,6 +3906,17 @@ function openScriptResponseModal() {
   }
 
   // Show dashboard / hide member view (or toggle)
+  window.filterMembersByAssignedType = function(val) {
+    var rows = document.querySelectorAll('#myMembersTbody tr');
+    rows.forEach(function(row) {
+      if (val === 'all') {
+        row.style.display = (row.dataset.assignedType === 'cardiac') ? '' : 'none';
+      } else {
+        row.style.display = (!row.dataset.assignedType) ? '' : 'none';
+      }
+    });
+  };
+
   function showDashboard() {
     homeDash.style.display = '';
     memberView.style.display = 'none';
@@ -3828,6 +4094,16 @@ function openScriptResponseModal() {
     document.getElementById('modalSuccessBanner').style.display = 'none';
   };
 
+  // Wellframe mobile panel screen switcher
+  window.wfmTab = function(screen) {
+    document.querySelectorAll('.wfm-screen').forEach(function(s) { s.classList.remove('wfm-active'); });
+    var el = document.getElementById('wfm-screen-' + screen);
+    if (el) el.classList.add('wfm-active');
+    document.querySelectorAll('.wfm-sw-btn').forEach(function(b) { b.classList.remove('active'); });
+    var btn = document.querySelector('.wfm-sw-btn[data-screen="' + screen + '"]');
+    if (btn) btn.classList.add('active');
+  };
+
   window.showActivitySuccess = function(closeModal) {
     var modalBanner = document.getElementById('modalSuccessBanner');
     var m = memberData[currentMemberKey];
@@ -3850,20 +4126,10 @@ function openScriptResponseModal() {
     if (modalBody) modalBody.scrollTop = 0;
 
     // Add the activity to the outstanding activities table
-    var actType = document.querySelector('#addActivityModal .gc-modal-select') ;
-    var actTypeSelects = document.querySelectorAll('#addActivityModal .gc-modal-select');
-    var activityTypeVal = 'N/A';
-    var notesVal = '';
-    // Find the Activity Type select (3rd select in modal) and notes
-    actTypeSelects.forEach(function(sel) {
-      var label = sel.closest('.gc-modal-field');
-      if (label) {
-        var lbl = label.querySelector('label');
-        if (lbl && lbl.textContent.indexOf('Activity Type') > -1) activityTypeVal = sel.value !== 'Select' ? sel.value : 'N/A';
-      }
-    });
+    var modalActivityTypeEl = document.getElementById('modalActivityType');
+    var activityTypeVal = (modalActivityTypeEl && modalActivityTypeEl.value !== 'Select') ? modalActivityTypeEl.value : 'N/A';
     var commentArea = document.querySelector('#addActivityModal textarea');
-    if (commentArea) notesVal = commentArea.value || 'N/A';
+    var notesVal = commentArea ? (commentArea.value || 'N/A') : 'N/A';
     window._gcSelectedActivity = activityTypeVal;
 
     var now = new Date();
@@ -3884,6 +4150,7 @@ function openScriptResponseModal() {
       otr.style.background = '#FFFDE7';
       otr.innerHTML = '<td><input type="checkbox" /></td>' +
         '<td>' + activityTypeVal + '</td>' +
+        '<td>N/A</td>' +
         '<td></td>' +
         '<td>High</td>' +
         '<td>' + dateStr + '</td>' +
@@ -3896,12 +4163,64 @@ function openScriptResponseModal() {
         '<td>Beatrice Kanya : All Access Admin</td>' +
         '<td>' + (notesVal || 'N/A') + '</td>' +
         '<td style="font-size:10px;">' + createdStr + '</td>' +
-        '<td>' + (activityTypeVal.toLowerCase().indexOf('assessment') > -1 ? '<span class="material-icons" style="font-size:16px;color:#388e3c;">check</span>' : '') + '</td>' +
         '<td><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> ' +
         '<span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> ' +
         '<span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td>';
       outTbody.insertBefore(otr, outTbody.firstChild);
       setTimeout(function() { otr.style.transition = 'background 1.5s'; otr.style.background = ''; }, 100);
+    }
+
+    // If Wellframe Assessment checkbox is checked, write assignment to wf_member_checklist so m-cwf shows it
+    var wfCheck = document.getElementById('wellframeAssessmentCheck');
+    if (wfCheck && wfCheck.checked && activityTypeVal !== 'N/A') {
+      try {
+        var ls = window.localStorage;
+        var now2 = new Date();
+        var p2 = function(n) { return String(n).padStart(2,'0'); };
+        var dateStr2 = p2(now2.getMonth()+1)+'/'+p2(now2.getDate())+'/'+now2.getFullYear();
+        var existingList = JSON.parse(ls.getItem('wf_member_checklist') || '[]');
+        var alreadyExists = existingList.some(function(item) {
+          return item.memberKey === currentMemberKey && item.assessment === activityTypeVal && item.status !== 'Completed';
+        });
+        if (!alreadyExists) {
+          existingList.push({
+            memberKey: currentMemberKey,
+            assessment: activityTypeVal,
+            addedBy: 'Beatrice Kanya',
+            date: dateStr2,
+            status: 'Pending',
+          });
+          ls.setItem('wf_member_checklist', JSON.stringify(existingList));
+          // Broadcast to m-cwf (cross-port, same browser)
+          try {
+            var bc = new BroadcastChannel('wf_checklist');
+            bc.postMessage({ type: 'assigned', list: existingList });
+            bc.close();
+          } catch(_) {}
+          // Add the new assessment card to the live Wellframe checklist panel
+          var checklistEl = document.getElementById('wfm-screen-checklist');
+          if (checklistEl) {
+            var newCard = document.createElement('div');
+            newCard.className = 'wfm-task-card';
+            newCard.dataset.assessment = activityTypeVal;
+            newCard.innerHTML =
+              '<div class="wfm-task-head"><span class="material-icons">assignment</span><span class="wfm-task-type">Check-In</span></div>' +
+              '<div class="wfm-task-main"><span class="wfm-task-title">' + activityTypeVal + '</span>' +
+              '<span class="wfm-task-chev"><span class="material-icons">chevron_right</span></span></div>' +
+              '<div class="wfm-care-tag"><span class="material-icons">favorite</span><span class="wfm-care-tag-txt">Assigned by Care Manager</span></div>';
+            // Insert before the "Complete" section if it exists, otherwise append
+            var secRows = checklistEl.querySelectorAll('.wfm-sec-row');
+            var completeRow = null;
+            secRows.forEach(function(row) { if (row.textContent.indexOf('Complete') > -1) completeRow = row; });
+            if (completeRow) {
+              checklistEl.querySelector('.wfm-page').insertBefore(newCard, completeRow);
+            } else {
+              var page = checklistEl.querySelector('.wfm-page');
+              if (page) page.appendChild(newCard);
+            }
+          }
+        }
+      } catch(_) {}
     }
 
     // Also add to General Activity table in Activity Summary
@@ -4056,7 +4375,10 @@ function openScriptResponseModal() {
   function _sr(script,date,by,status,complete,program,score,actType,outcome,dur){return '<tr><td><input type="checkbox"/></td><td><a href="#" style="color:var(--link);font-size:11px;">'+script+'</a></td><td>'+date+'</td><td>'+by+'</td><td>'+status+'</td><td>'+complete+'</td><td>N/A</td><td>'+program+'</td><td>'+score+'</td><td>'+actType+'</td><td><a href="#" style="color:var(--link);">'+outcome+'</a></td><td>'+dur+'</td><td></td><td>'+_SDOC+'</td></tr>';}
   function _gr(date,by,type,outcome){return '<tr><td>'+date+'</td><td>'+by+'</td><td>N/A</td><td>N/A</td><td>'+type+'</td><td>N/A</td><td>N/A</td><td><a href="#" style="color:var(--link);">'+outcome+'</a></td><td>'+_VIS+'</td><td>'+_DEL+'</td></tr>';}
   function _gs(sched,by,type){return '<tr><td>N/A</td><td>N/A</td><td>'+sched+'</td><td>'+by+'</td><td>'+type+'</td><td>N/A</td><td>N/A</td><td><a href="#" style="color:var(--link);">Scheduled</a></td><td>'+_VIS+'</td><td>'+_DEL+'</td></tr>';}
-  function _or(type,priority,followUp,callTime,created){return '<tr><td><input type="checkbox"/></td><td>'+type+'</td><td></td><td>'+priority+'</td><td>'+followUp+'</td><td>N/A</td><td>'+callTime+'</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">'+created+'</td><td></td><td style="white-space:nowrap;">'+_ACT+'</td></tr>';}
+  function _or(type,priority,followUp,callTime,created,contactMethod,memberChecklist){var cm=contactMethod||'N/A';var mc=memberChecklist?'<span class="material-icons" style="font-size:18px;color:#388e3c;">check_circle</span>':'';return '<tr><td><input type="checkbox"/></td><td>'+type+'</td><td>'+cm+'</td><td style="text-align:center;">'+mc+'</td><td>'+priority+'</td><td>'+followUp+'</td><td>N/A</td><td>'+callTime+'</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">'+created+'</td><td style="white-space:nowrap;">'+_ACT+'</td></tr>';}
+  var _WF_LOGO = '<img src="assets/Wellframe/Wellframe_Shorthand_Logo_Color.svg" alt="Wellframe" style="height:18px;vertical-align:middle;" />';
+  function _or3(type,priority,followUp,callTime,created,contactMethod,memberChecklist){var logo=(contactMethod==='Wellframe')?_WF_LOGO:(contactMethod||'N/A');var label=memberChecklist?'<span class="gc-tip" data-tip="This appears on the Member\'s App" style="font-size:11px;margin-left:6px;white-space:nowrap;">Shown to Member</span>':'<span class="gc-tip" data-tip="This does not appear on the Member\'s App" style="font-size:11px;margin-left:6px;white-space:nowrap;">Hidden from Member</span>';var cm='<div style="display:flex;align-items:center;">'+logo+label+'</div>';return '<tr><td><input type="checkbox"/></td><td>'+type+'</td><td>'+cm+'</td><td>'+priority+'</td><td>'+followUp+'</td><td>N/A</td><td>'+callTime+'</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">'+created+'</td><td style="white-space:nowrap;">'+_ACT+'</td></tr>';}
+  function _or2(type,priority,followUp,callTime,created,contactMethod,memberChecklist){var cm=contactMethod||'N/A';var vis=memberChecklist?'<div>'+cm+'</div><div style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;white-space:nowrap;"><span class="material-icons" style="font-size:14px;">visibility</span>Visible to member</div>':'<div>'+cm+'</div><div style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;white-space:nowrap;"><span class="material-icons" style="font-size:14px;">visibility_off</span>Not visible to member</div>';return '<tr><td><input type="checkbox"/></td><td>'+type+'</td><td>'+vis+'</td><td>'+priority+'</td><td>'+followUp+'</td><td>N/A</td><td>'+callTime+'</td><td>N/A</td><td>N/A</td><td>N/A</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td>Accepted</td><td>Beatrice Kanya : All Access Admin</td><td>N/A</td><td style="font-size:10px;">'+created+'</td><td style="white-space:nowrap;">'+_ACT+'</td></tr>';}
   function _ar(badgeCls,status,desc,source,date){return '<tr><td><input type="checkbox"/></td><td><span class="gc-badge '+badgeCls+'">'+status+'</span></td><td>'+desc+'</td><td>'+source+'</td><td>'+date+'</td></tr>';}
 
   var memberTabData = {
@@ -4146,8 +4468,19 @@ function openScriptResponseModal() {
         _gs('05/03/2026','Beatrice Kanya','Annual Physical Follow-Up')
       ],
       outstandingActivities: [
-        _or('Fall Prevention PT Coordination','Medium','04/07/2026','09:00','03/21/2026 02:30:00'),
-        _or('Annual Physical — Pre-Visit Outreach','Low','05/01/2026','10:00','03/10/2026 10:45:00')
+        _or('Health Risk Assessment','High','05/27/2026','09:00','05/20/2026 08:00:00','Wellframe',true),
+        _or('Health Risk Assessment','High','06/03/2026','09:00','05/20/2026 08:00:00','Wellframe',false),
+        _or('Health Risk Assessment','High','06/10/2026','09:00','05/20/2026 08:00:00','Wellframe',false)
+      ],
+      outstandingActivities2: [
+        _or2('Health Risk Assessment','High','05/27/2026','09:00','05/20/2026 08:00:00','Wellframe',true),
+        _or2('Health Risk Assessment','High','06/03/2026','09:00','05/20/2026 08:00:00','Wellframe',false),
+        _or2('Health Risk Assessment','High','06/10/2026','09:00','05/20/2026 08:00:00','Wellframe',false)
+      ],
+      outstandingActivities3: [
+        _or3('Health Risk Assessment','High','05/27/2026','09:00','05/20/2026 08:00:00','Wellframe',true),
+        _or3('Health Risk Assessment','High','06/03/2026','09:00','05/20/2026 08:00:00','Wellframe',false),
+        _or3('Health Risk Assessment','High','06/10/2026','09:00','05/20/2026 08:00:00','Wellframe',false)
       ],
       memberAlerts: [
         _ar('gc-badge-danger','New','Fall Event — Self-reported stair fall','Member self-reported a fall on 03/20/2026 while descending stairs at home. No injury sustained. STEADI fall risk assessment completed 03/21/2026: score 9 (moderate-high). Home safety plan updated. PT referral initiated.','03/21/2026'),
@@ -4234,11 +4567,31 @@ function openScriptResponseModal() {
     var genTbody = document.getElementById('generalActivityTbody');
     if (genTbody) genTbody.innerHTML = d.generalActivity.join('');
     var outTbody = document.getElementById('outstandingTbody');
-    if (outTbody) outTbody.innerHTML = d.outstandingActivities.join('');
+    if (outTbody) {
+      var dynamicRows = Array.from(outTbody.querySelectorAll('tr[data-dynamic="true"]'));
+      outTbody.innerHTML = d.outstandingActivities.join('');
+      dynamicRows.forEach(function(row) { outTbody.appendChild(row); });
+    }
+    var outTbody2 = document.getElementById('outstandingTbody2');
+    if (outTbody2) outTbody2.innerHTML = (d.outstandingActivities2 || d.outstandingActivities).join('');
+    var outTbody3 = document.getElementById('outstandingTbody3');
+    if (outTbody3) outTbody3.innerHTML = (d.outstandingActivities3 || d.outstandingActivities).join('');
     pendingOutstandingActivities = [];
     var alertsTbody = document.querySelector('#artab-member-alerts .gc-table tbody');
     if (alertsTbody) alertsTbody.innerHTML = d.memberAlerts.join('');
   }
+
+  window.switchOAOption = function(n) {
+    [1,2,3].forEach(function(i) {
+      var panel = document.getElementById('oa-option-' + i);
+      var btn = document.querySelector('[data-oa-option="' + i + '"]');
+      if (panel) panel.style.display = (i === n) ? '' : 'none';
+      if (btn) {
+        btn.style.background = (i === n) ? '#6750A4' : '#EDE9F6';
+        btn.style.color = (i === n) ? '#fff' : '#6750A4';
+      }
+    });
+  };
 
   // Track current member
   var currentMemberKey = 'jackson-thomas';
@@ -4365,6 +4718,157 @@ function openScriptResponseModal() {
     // Modal member name
     var modalName = document.getElementById('modalMemberName');
     if (modalName) modalName.textContent = m.name;
+
+    // Wellframe panel — phone mockup
+    var wfPanel = document.getElementById('wellframe-panel-content');
+    if (wfPanel) {
+      var isEnrolled = m.digital === 'Wellframe';
+      if (!isEnrolled) {
+        wfPanel.innerHTML =
+          '<div class="wfm-hd">' +
+            '<img src="assets/Wellframe/Logomark.png" alt="Wellframe" class="wfm-hd-logo" style="opacity:0.4;" />' +
+            '<div><div class="wfm-hd-title" style="color:var(--text-secondary);">Wellframe</div><div class="wfm-hd-sub">Digital Health Platform</div></div>' +
+            '<span class="gc-badge" style="margin-left:auto;background:#eee;color:var(--text-secondary);">Not Enrolled</span>' +
+          '</div>' +
+          '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;color:var(--text-muted);">' +
+            '<span class="material-icons" style="font-size:48px;color:#ccc;display:block;margin-bottom:12px;">smartphone</span>' +
+            '<div style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">' + m.name + ' is not enrolled in Wellframe</div>' +
+            '<div style="font-size:12px;">Enroll this member to view their mobile app experience.</div>' +
+          '</div>';
+      } else {
+        var wfData = {
+          'jackson-thomas': {
+            initials: 'JT', days: 103,
+            program: 'Diabetes Management', programAccent: '#D8EDF5',
+            checklist: [
+              { type: 'Reminder',  icon: 'alarm',      title: '10:00 AM: Take a walk', done: false },
+              { type: 'Check-In',  icon: 'assignment',  title: 'Health Risk Assessment', tag: 'Digital Intake Assessment', done: false },
+              { type: 'Medication',icon: 'medication',  title: '10:00 AM: Take Claritin', done: true },
+              { type: 'Article',   icon: 'article',     title: 'About Diabetes Medications', tag: 'Diabetes Management', done: true }
+            ],
+            checkins: [
+              { name: 'Health Risk Assessment', sub: 'Due Apr 20, 2026', pct: 0 },
+              { name: 'Fall Risk Assessment',   sub: 'Due May 3, 2026',  pct: 0 }
+            ],
+            meds: [
+              { name: 'Gabapentin',  schedule: 'Take daily, at 9:00AM', note: 'New — Starting tomorrow' },
+              { name: 'Metformin',   schedule: 'Take daily, at 9:00AM' },
+              { name: 'Claritin',    schedule: 'Take daily, at 9:00AM' }
+            ],
+            reminders: [
+              { name: 'Take a walk',               schedule: 'Daily, at 9:00AM' },
+              { name: 'Endocrinology appointment', schedule: 'Jan 15, 2024 at 8:00AM' }
+            ]
+          },
+          'sarah-williams': {
+            initials: 'SW', days: 47,
+            program: 'Maternal Health', programAccent: '#F0E6FA',
+            checklist: [
+              { type: 'Reminder',  icon: 'alarm',      title: '2:00 PM: Prenatal vitamins', done: false },
+              { type: 'Check-In',  icon: 'assignment',  title: 'Maternal Health Assessment', tag: 'Digital Intake Assessment', done: false },
+              { type: 'Article',   icon: 'article',     title: 'Gestational Diabetes Basics', tag: 'Maternal Health', done: true }
+            ],
+            checkins: [
+              { name: 'Maternal Health Assessment', sub: 'Due Apr 15, 2026', pct: 0 }
+            ],
+            meds: [
+              { name: 'Prenatal Vitamins', schedule: 'Take daily, at 2:00PM' },
+              { name: 'Folic Acid',        schedule: 'Take daily, at 9:00AM' }
+            ],
+            reminders: [
+              { name: 'OB check-up',         schedule: 'Apr 10, 2026 at 10:00AM' },
+              { name: 'Daily walk (15 min)', schedule: 'Daily, at 3:00PM' }
+            ]
+          }
+        };
+        var d = wfData[key] || { initials: m.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2), days: 1, program: m.program || 'Care Program', programAccent: '#D9E3E7', checklist: [], checkins: [], meds: [], reminders: [] };
+
+        function taskCard(item) {
+          return '<div class="wfm-task-card' + (item.done ? ' wfm-done' : '') + '">' +
+            '<div class="wfm-task-head"><span class="material-icons">' + item.icon + '</span><span class="wfm-task-type">' + item.type + '</span></div>' +
+            '<div class="wfm-task-main"><span class="wfm-task-title">' + item.title + '</span>' +
+            (item.done ? '<span class="wfm-task-check"><span class="material-icons">check_circle</span></span>' : '<span class="wfm-task-chev"><span class="material-icons">chevron_right</span></span>') +
+            '</div>' +
+            (item.tag ? '<div class="wfm-care-tag"><span class="material-icons">favorite</span><span class="wfm-care-tag-txt">' + item.tag + '</span></div>' : '') +
+            '</div>';
+        }
+        var pendingItems = d.checklist.filter(function(i){return !i.done;}).map(taskCard).join('');
+        var doneItems   = d.checklist.filter(function(i){return  i.done;}).map(taskCard).join('');
+
+        var checklistScreen =
+          '<div class="wfm-page">' +
+            '<div class="wfm-page-title">Checklist</div>' +
+            '<div class="wfm-sec-row"><span class="wfm-sec-title">Today</span><span class="wfm-add-btn"><span class="material-icons">add_circle_outline</span>Add</span></div>' +
+            '<div class="wfm-step-card"><div class="wfm-step-head"><span class="material-icons">directions_walk</span><span class="wfm-step-title">Step Count</span><span class="material-icons wfm-step-chev" style="font-size:18px;color:#282F35;">chevron_right</span></div><div class="wfm-step-bar"><div class="wfm-step-fill"></div></div></div>' +
+            pendingItems +
+            (doneItems ? '<div class="wfm-sec-row" style="margin-top:12px;"><span class="wfm-sec-title">Complete</span></div>' + doneItems : '') +
+          '</div>';
+
+        var ciCards = d.checkins.map(function(ci) {
+          return '<div class="wfm-ci-card"><div class="wfm-ci-row"><span class="material-icons">assignment_turned_in</span><div class="wfm-ci-body"><div class="wfm-ci-name">' + ci.name + '</div><div class="wfm-ci-sub">' + ci.sub + '</div><div class="wfm-ci-prog"><div class="wfm-ci-track"><div class="wfm-ci-fill" style="width:' + ci.pct + '%;"></div></div><span class="wfm-ci-pct">' + ci.pct + '%</span></div></div></div></div>';
+        }).join('');
+        var medRows = d.meds.map(function(med) {
+          return '<div class="wfm-list-row"><span class="material-icons">medication</span><div class="wfm-list-body"><div class="wfm-list-name">' + med.name + '</div><div class="wfm-list-sub">' + med.schedule + '</div>' + (med.note ? '<div class="wfm-list-note">' + med.note + '</div>' : '') + '</div><span class="material-icons" style="font-size:18px;color:#0E98BE;">alarm</span></div>';
+        }).join('');
+        var reminderRows = d.reminders.map(function(r) {
+          return '<div class="wfm-list-row"><div class="wfm-list-body"><div class="wfm-list-name">' + r.name + '</div><div class="wfm-list-sub">' + r.schedule + '</div></div><span class="material-icons" style="font-size:18px;color:#0E98BE;">alarm</span></div>';
+        }).join('');
+
+        var profileScreen =
+          '<div class="wfm-prof-hd">' +
+            '<div class="wfm-prof-title-row"><span class="wfm-prof-title">Profile</span><span class="material-icons" style="font-size:22px;color:#282F35;">settings</span></div>' +
+            '<div class="wfm-user-row"><div class="wfm-avatar">' + d.initials + '</div><div><div class="wfm-user-name">' + m.preferred + ' ' + m.name.split(' ').slice(-1)[0] + '</div><div class="wfm-user-day">Day ' + d.days + ' on Wellframe</div></div></div>' +
+          '</div>' +
+          '<div class="wfm-prof-scroll">' +
+            '<div class="wfm-prof-sec">Enrolled Care Programs</div>' +
+            '<div class="wfm-cp-scroll">' +
+              '<div class="wfm-cp-card"><div class="wfm-cp-top"><span class="material-icons">favorite</span><div class="wfm-cp-title">' + d.program + '</div></div><div class="wfm-cp-bot" style="background:' + d.programAccent + ';"><span class="material-icons" style="font-size:32px;color:#0080A3;opacity:0.4;">local_hospital</span></div></div>' +
+            '</div>' +
+            '<div class="wfm-prof-sec">Check-Ins</div>' + ciCards +
+            '<div class="wfm-prof-sec">Medication List</div>' +
+            '<div class="wfm-add-row"><span class="material-icons">add_circle_outline</span><span class="wfm-add-row-lbl">Add Medication</span></div>' +
+            '<div class="wfm-list-card">' + medRows + '</div>' +
+            '<div class="wfm-prof-sec">Health Reminders</div>' +
+            '<div class="wfm-add-row"><span class="material-icons">add_circle_outline</span><span class="wfm-add-row-lbl">Add Reminder</span></div>' +
+            '<div class="wfm-list-card">' + reminderRows + '</div>' +
+          '</div>';
+
+        var tabBar =
+          '<div class="wfm-tab-bar">' +
+            '<button class="wfm-tab wfm-tab-on" onclick="wfmTab(\'checklist\')" aria-label="Checklist"><span class="material-icons">checklist</span><span class="wfm-tab-lbl">Checklist</span></button>' +
+            '<button class="wfm-tab" onclick="wfmTab(\'progress\')" aria-label="Progress"><span class="material-icons">show_chart</span><span class="wfm-tab-lbl">Progress</span></button>' +
+            '<button class="wfm-tab" onclick="wfmTab(\'chat\')" aria-label="Chat"><span class="material-icons">chat_bubble_outline</span><span class="wfm-tab-lbl">Chat</span></button>' +
+            '<button class="wfm-tab" onclick="wfmTab(\'resources\')" aria-label="Resources"><span class="material-icons">menu_book</span><span class="wfm-tab-lbl">Resources</span></button>' +
+            '<button class="wfm-tab" onclick="wfmTab(\'profile\')" aria-label="Profile"><span class="material-icons">person_outline</span><span class="wfm-tab-lbl">Profile</span></button>' +
+          '</div>';
+
+        wfPanel.innerHTML =
+          '<div class="wfm-hd">' +
+            '<img src="assets/Wellframe/Logomark.png" alt="Wellframe" class="wfm-hd-logo" />' +
+            '<div><div class="wfm-hd-title">Wellframe</div><div class="wfm-hd-sub">Member Mobile View</div></div>' +
+            '<span class="gc-badge gc-badge-teal" style="margin-left:auto;">Enrolled</span>' +
+          '</div>' +
+          '<div class="wfm-switcher">' +
+            '<button class="wfm-sw-btn active" data-screen="checklist" onclick="wfmTab(\'checklist\')"><span class="material-icons">checklist</span>Checklist</button>' +
+            '<button class="wfm-sw-btn" data-screen="profile" onclick="wfmTab(\'profile\')"><span class="material-icons">person_outline</span>Profile</button>' +
+          '</div>' +
+          '<div class="wfm-device-wrap">' +
+            '<div class="wfm-device">' +
+              '<div class="wfm-screen-outer">' +
+                '<div class="wfm-status"><span class="wfm-time">9:41</span><div class="wfm-status-icons"><span class="material-icons">signal_cellular_alt</span><span class="material-icons">wifi</span><span class="material-icons">battery_full</span></div></div>' +
+                '<div class="wfm-screen-scroll">' +
+                  '<div id="wfm-screen-checklist" class="wfm-screen wfm-active">' + checklistScreen + '</div>' +
+                  '<div id="wfm-screen-profile"   class="wfm-screen">' + profileScreen + '</div>' +
+                  '<div id="wfm-screen-progress"  class="wfm-screen"><div style="padding:24px 16px;text-align:center;color:#78868E;font-size:13px;font-family:system-ui,sans-serif;">Progress screen</div></div>' +
+                  '<div id="wfm-screen-chat"      class="wfm-screen"><div style="padding:24px 16px;text-align:center;color:#78868E;font-size:13px;font-family:system-ui,sans-serif;">Chat screen</div></div>' +
+                  '<div id="wfm-screen-resources" class="wfm-screen"><div style="padding:24px 16px;text-align:center;color:#78868E;font-size:13px;font-family:system-ui,sans-serif;">Resources screen</div></div>' +
+                '</div>' +
+                tabBar +
+              '</div>' +
+            '</div>' +
+          '</div>';
+      }
+    }
 
     // Populate tab content for this member
     populateTabs(key);
@@ -4745,13 +5249,7 @@ function openScriptResponseModal() {
       setTimeout(function() { hraRow.style.transition = 'background 2s'; hraRow.style.background = ''; }, 200);
     }
 
-    // Remove any matching activity rows from Outstanding Activities
-    var outTbody = document.getElementById('outstandingTbody');
-    if (outTbody) {
-      outTbody.querySelectorAll('tr').forEach(function(row) {
-        if (row.textContent.indexOf(_actName) !== -1) row.remove();
-      });
-    }
+    // Leave Outstanding Activities rows as-is when assessment is completed
 
     // Add completed row to General Activity
     var genTbody = document.getElementById('generalActivityTbody');
@@ -4787,7 +5285,86 @@ function openScriptResponseModal() {
         }
       });
     }
+
+    // Add intervention to Care Plan Overview
+    addCarePlanIntervention();
   };
+
+  var INTERVENTIONS = {
+    'jackson-thomas': {
+      text: 'Case Manager will educate member on diabetes self-management including blood glucose monitoring, medication adherence, dietary modifications, and recognition of hypoglycemic symptoms to reduce emergency visits and improve glycemic control.',
+      scriptName: 'Health Risk Assessment',
+      priority: 'High'
+    },
+    'maria-rivera': {
+      text: 'Case Manager will educate member on CHF self-management including daily weight monitoring, fluid restriction, sodium reduction, medication adherence, and early recognition of worsening symptoms requiring immediate medical attention.',
+      scriptName: 'Health Risk Assessment',
+      priority: 'High'
+    }
+  };
+
+  function addCarePlanIntervention() {
+    var body = document.getElementById('cp-overview-body');
+    if (!body || body.querySelector('[data-dynamic-intervention="true"]')) return;
+
+    var iv = INTERVENTIONS[currentMemberKey] || INTERVENTIONS['jackson-thomas'];
+    var now = new Date();
+    var pad = function(n){ return String(n).padStart(2,'0'); };
+    var startDate = pad(now.getMonth()+1)+'/'+pad(now.getDate())+'/'+now.getFullYear();
+    var target = new Date(now); target.setMonth(target.getMonth()+6);
+    var targetDate = pad(target.getMonth()+1)+'/'+pad(target.getDate())+'/'+target.getFullYear();
+
+    var html =
+      '<div data-dynamic-intervention="true" style="border:1px solid #d0d0d0;margin:12px 16px;border-radius:3px;font-size:12px;font-family:var(--font);background:#fff;">' +
+        // Top bar
+        '<div style="display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid #e0e0e0;flex-wrap:wrap;">' +
+          '<input type="checkbox" style="accent-color:var(--teal);" /> <span style="font-size:12px;">Select</span>' +
+          '<span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#333;"><span style="color:#388e3c;font-size:15px;">&#10003;</span> <strong>Eligibility</strong> <span style="background:#e8f5e9;color:#388e3c;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:600;">Active</span></span>' +
+          '<span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;"><span style="color:#E07820;font-size:16px;">&#9873;</span> <strong>Recommended</strong></span>' +
+          '<span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;"><strong>Priority</strong> <select style="height:24px;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:11px;font-family:var(--font);"><option>High</option><option>Medium</option><option>Low</option></select></span>' +
+          '<label style="display:inline-flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--teal);" /> Sign Off</label>' +
+        '</div>' +
+        // Intervention label + text
+        '<div style="padding:8px 12px 4px;border-bottom:1px solid #e8e8e8;">' +
+          '<div style="font-weight:600;color:#333;margin-bottom:3px;">Intervention</div>' +
+          '<div style="color:#333;line-height:1.5;">' + iv.text + '</div>' +
+        '</div>' +
+        // Row 1: Status, Member Plan, Start Date, Target Date, Sign off Date
+        '<div style="display:grid;grid-template-columns:100px 1fr 110px 110px 110px;border-bottom:1px solid #e8e8e8;">' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Status</div><div style="color:#333;">New</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Member Plan</div><div style="color:#333;line-height:1.4;">' + iv.text + '</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Start Date</div><div style="color:#333;">' + startDate + '</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Target Date</div><div style="color:#333;">' + targetDate + '</div></div>' +
+          '<div style="padding:8px 12px;"><div style="color:#666;margin-bottom:2px;">Sign off Date</div><div style="color:#333;">N/A</div></div>' +
+        '</div>' +
+        // Row 2: Opportunity Resolved Date, Add Appointment, Targeted To, Script Name, Roles, Term
+        '<div style="display:grid;grid-template-columns:140px 120px 110px 1fr 140px 80px;border-bottom:1px solid #e8e8e8;">' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Opportunity Resolved Date</div><div style="color:#333;">N/A</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Add Appointment</div><div><a href="#" style="color:var(--link);">Add</a></div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Targeted To</div><div style="color:#333;">N/A</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Script Name</div><div style="color:#333;">' + iv.scriptName + '</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Roles</div><div style="color:#333;">All Access Admin</div></div>' +
+          '<div style="padding:8px 12px;"><div style="color:#666;margin-bottom:2px;">Term</div><div><a href="#" style="color:var(--link);">Long</a></div></div>' +
+        '</div>' +
+        // Row 3: Assigned Owner, Source, Created On, Created By, Updated On, Updated By
+        '<div style="display:grid;grid-template-columns:140px 120px 110px 1fr 110px 1fr;border-bottom:1px solid #e8e8e8;">' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Assigned Owner</div><div style="color:#333;">N/A</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Source</div><div style="color:#333;">Script</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Created On</div><div style="color:#333;">' + startDate + '</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Created By</div><div style="color:#333;">Beatrice Kanya</div></div>' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Updated On</div><div style="color:#333;">N/A</div></div>' +
+          '<div style="padding:8px 12px;"><div style="color:#666;margin-bottom:2px;">Updated By</div><div style="color:#333;">N/A</div></div>' +
+        '</div>' +
+        // Row 4: Guideline Source, Payor
+        '<div style="display:grid;grid-template-columns:140px 1fr;">' +
+          '<div style="padding:8px 12px;border-right:1px solid #e8e8e8;"><div style="color:#666;margin-bottom:2px;">Guideline Source</div><div style="color:#333;">N/A</div></div>' +
+          '<div style="padding:8px 12px;"><div style="color:#666;margin-bottom:2px;">Payor</div><div style="color:#333;">Program Enrollment &gt;&gt; Enrollment</div></div>' +
+        '</div>' +
+      '</div>';
+
+    body.innerHTML = html;
+    body.style.minHeight = '';
+  }
 
   window.saveAndAddActivity = function() {
     document.getElementById('captureOutcomeModal').classList.remove('open');
@@ -4931,11 +5508,130 @@ function openScriptResponseModal() {
     }
   });
 
+  // Listen for m-cwf assessment completions via BroadcastChannel (cross-port) and storage event (same-origin fallback)
+  function handleChecklistUpdate(items) {
+    try {
+      var outTbody = document.getElementById('outstandingTbody');
+      if (!outTbody) return;
+      items.forEach(function(item) {
+        if (item.status !== 'Completed') return;
+        var rows = outTbody.querySelectorAll('tr');
+        var matched = false;
+        rows.forEach(function(row) {
+          var cells = row.querySelectorAll('td');
+          if (cells.length > 1 && cells[1].textContent.trim() === item.assessment) {
+            matched = true;
+          }
+        });
+        if (!matched) {
+          var now = new Date();
+          var p = function(n) { return String(n).padStart(2,'0'); };
+          var dateStr = p(now.getMonth()+1)+'/'+p(now.getDate())+'/'+now.getFullYear();
+          var timeStr = p(now.getHours())+':'+p(now.getMinutes());
+          var createdStr = dateStr+' '+timeStr+':'+p(now.getSeconds());
+          var tr = document.createElement('tr');
+          tr.dataset.dynamic = 'true';
+          tr.style.background = '#E8F5E9';
+          tr.innerHTML = '<td><input type="checkbox" /></td>' +
+            '<td>' + item.assessment + '</td>' +
+            '<td>Wellframe</td><td></td>' +
+            '<td>High</td>' +
+            '<td>' + (item.date || dateStr) + '</td>' +
+            '<td>N/A</td><td>' + timeStr + '</td>' +
+            '<td>N/A</td><td>N/A</td><td>N/A</td>' +
+            '<td>Beatrice Kanya : All Access Admin</td>' +
+            '<td>N/A</td><td>Completed</td>' +
+            '<td>Beatrice Kanya : All Access Admin</td>' +
+            '<td>Completed via Wellframe</td>' +
+            '<td style="font-size:10px;">' + createdStr + '</td>' +
+            '<td style="white-space:nowrap;"><span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Edit">edit_note</span> <span class="material-icons" style="font-size:18px;color:#315E7B;cursor:pointer;" title="Perform Activity" onclick="openOutcomeModal();">thumb_up</span> <span class="material-icons" style="font-size:18px;color:#5a8aab;cursor:pointer;" title="Delete">delete</span></td>';
+          outTbody.insertBefore(tr, outTbody.firstChild);
+        }
+      });
+    } catch(_) {}
+  }
+
+  try {
+    var _gcBc = new BroadcastChannel('wf_checklist');
+    _gcBc.onmessage = function(e) {
+      if (e.data && e.data.list) handleChecklistUpdate(e.data.list);
+    };
+  } catch(_) {}
+
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'wf_member_checklist' && e.newValue) {
+      try { handleChecklistUpdate(JSON.parse(e.newValue)); } catch(_) {}
+    }
+  });
+
   // Also listen via storage event (fallback for cross-tab on same origin)
   window.addEventListener('storage', function(e) {
     if (e.key === 'suki-note-ready' && e.newValue && window._gcOpenSukiNote) {
       localStorage.removeItem('suki-note-ready');
       window._gcOpenSukiNote(e.newValue);
+    }
+  });
+
+  // Listen for assessment completion from m-unauthenticated and mark Maria Rivera as Completed
+  function handleAssessmentCompleted(assessmentType) {
+    var tbody = document.getElementById('requestReceivedTbody');
+    if (!tbody) return;
+    // Avoid duplicate rows
+    var existing = tbody.querySelectorAll('tr');
+    for (var i = 0; i < existing.length; i++) {
+      if (existing[i].dataset.mariaCompleted) return;
+    }
+    var now = new Date();
+    var p = function(n) { return String(n).padStart(2, '0'); };
+    var dateStr = p(now.getMonth()+1)+'/'+p(now.getDate())+'/'+now.getFullYear();
+    var tr = document.createElement('tr');
+    tr.dataset.mariaCompleted = '1';
+    tr.style.background = '#E8F5E9';
+    tr.innerHTML =
+      '<td style="padding:4px 8px;"><input type="checkbox"></td>' +
+      '<td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Maria Rivera</a></td>' +
+      '<td style="padding:4px 8px;">' + (assessmentType || 'Health Risk Assessment') + '</td>' +
+      '<td style="padding:4px 8px;">' + dateStr + '</td>' +
+      '<td style="padding:4px 8px;">' + dateStr + '</td>' +
+      '<td style="padding:4px 8px;">Beatrice Kanya</td>' +
+      '<td style="padding:4px 8px;">High</td>' +
+      '<td style="padding:4px 8px;"><span style="color:#2e7d32;font-weight:600;display:inline-flex;align-items:center;gap:3px;"><span class="material-icons" style="font-size:13px;">check_circle</span>Complete</span></td>' +
+      '<td style="padding:4px 8px;"><span style="background:#005d9f;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;">WQ</span></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  }
+
+  // Check on load in case already completed
+  (function() {
+    var val = localStorage.getItem('assessment-completed');
+    if (val) handleAssessmentCompleted(val);
+  })();
+
+  // BroadcastChannel — works same-origin across iframes in the same tab
+  try {
+    var _assessmentBc = new BroadcastChannel('gc_assessment');
+    console.log('[cwf] BroadcastChannel gc_assessment listening');
+    _assessmentBc.onmessage = function(e) {
+      console.log('[cwf] BroadcastChannel received', e.data);
+      if (e.data && e.data.type === 'ASSESSMENT_COMPLETED') {
+        handleAssessmentCompleted(e.data.assessmentType);
+      }
+    };
+  } catch(err) { console.warn('[cwf] BroadcastChannel failed', err); }
+
+  // storage event — fires when another context on same origin writes localStorage
+  window.addEventListener('storage', function(e) {
+    console.log('[cwf] storage event', e.key, e.newValue);
+    if (e.key === 'assessment-completed-ts' && e.newValue) {
+      var val = localStorage.getItem('assessment-completed');
+      if (val) handleAssessmentCompleted(val);
+    }
+  });
+
+  // postMessage fallback
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'ASSESSMENT_COMPLETED') {
+      console.log('[cwf] postMessage received', e.data);
+      handleAssessmentCompleted(e.data.assessmentType);
     }
   });
 
@@ -4996,15 +5692,15 @@ function openScriptResponseModal() {
           <select class="gc-modal-select" id="modalActivityType" onchange="updateWellframeSection()">
             <option>Select</option>
             <option>Health Risk Assessment</option>
-            <option>Maternal Health Assessment</option>
-            <option>Behavioral Health Assessment</option>
-            <option>Chronic Disease Management Assessment</option>
-            <option>Medication Review Assessment</option>
-            <option>Social Determinants of Health Assessment</option>
+            <option>Comprehensive Assessment</option>
             <option>Functional Status Assessment</option>
-            <option>Care Gaps Assessment</option>
-            <option>Transition of Care Assessment</option>
-            <option>Pediatric Developmental Assessment</option>
+            <option>Social Determinants of Health (SDOH) Assessment</option>
+            <option>Pediatric HRA</option>
+            <option>Oncology HRA</option>
+            <option>Fall Risk Assessment</option>
+            <option>Fall Risk Prevention</option>
+            <option>Transitions of Care (TOC) 1 Pre-Discharge</option>
+            <option>Transitions of Care (TOC) 3 Home Visit</option>
           </select>
         </div>
         <div class="gc-modal-field">

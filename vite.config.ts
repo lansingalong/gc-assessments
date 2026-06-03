@@ -10,4 +10,16 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    port: 8085,
+    watch: {
+      include: ['public/**'],
+    },
+    proxy: {
+      '/m-unauthenticated': {
+        target: 'http://localhost:5174',
+        changeOrigin: true,
+      },
+    },
+  },
 })
