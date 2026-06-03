@@ -5086,7 +5086,6 @@ window._gcAllAssessmentQA = {
       if (existing) existing.remove();
       var tr = document.createElement('tr');
       tr.dataset.mariaCompleted = '1';
-      tr.style.background = '#E8F5E9';
       tr.innerHTML =
         '<td style="padding:4px 8px;"><input type="checkbox"></td>' +
         '<td style="padding:4px 8px;"><a href="#" class="gc-kv-link member-link" data-member="maria-rivera">Maria Rivera</a></td>' +
@@ -5095,10 +5094,9 @@ window._gcAllAssessmentQA = {
         '<td style="padding:4px 8px;">' + createdStr + '</td>' +
         '<td style="padding:4px 8px;">Beatrice Kanya</td>' +
         '<td style="padding:4px 8px;">High</td>' +
-        '<td style="padding:4px 8px;"><span style="color:#2e7d32;font-weight:600;">Complete</span></td>' +
+        '<td style="padding:4px 8px;">Accepted</td>' +
         '<td style="padding:4px 8px;"><span style="background:#315E7B;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:2px;">WQ</span></td>';
       rrTbody.insertBefore(tr, rrTbody.firstChild);
-      setTimeout(function(row) { row.style.transition = 'background 1.5s'; row.style.background = ''; }.bind(null, tr), 100);
     }
 
     // Re-render and navigate to Activity Summary if on Maria Rivera's profile
@@ -6259,6 +6257,84 @@ function rrTypeChange(val) {
     </div>
   </div>
 </div>
+
+<!-- ══════════════ MARIA RIVERA ALERTS MODAL ══════════════ -->
+<div id="mariaAlertsOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9000;display:none;align-items:center;justify-content:center;">
+  <div style="background:#fff;width:780px;max-width:95vw;border-radius:4px;box-shadow:0 8px 32px rgba(0,0,0,0.25);font-family:'Open Sans',Arial,sans-serif;">
+    <!-- Header -->
+    <div style="padding:18px 24px 0;border-bottom:3px solid #C0392B;margin-bottom:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:22px;font-weight:700;color:#1a1a1a;">Alerts</span>
+        <button onclick="document.getElementById('mariaAlertsOverlay').style.display='none'" style="background:none;border:none;cursor:pointer;color:#555;font-size:20px;line-height:1;" aria-label="Close">&#x2715;</button>
+      </div>
+    </div>
+    <!-- Body -->
+    <div style="padding:16px 24px;">
+      <div style="font-size:12px;color:#C0392B;margin-bottom:16px;">* Indicates required field</div>
+      <hr style="border:none;border-top:1px solid #c0c0c0;margin-bottom:16px;">
+      <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:16px;">
+        <div>
+          <div style="font-size:12px;font-weight:700;margin-bottom:4px;"><span style="color:#C0392B;">*</span>From Date <span style="font-weight:400;color:#888;">MM/DD/YYYY</span></div>
+          <div style="display:flex;align-items:center;border:1px solid #ccc;border-radius:3px;padding:6px 10px;width:200px;background:#fff;">
+            <input type="text" placeholder="" style="border:none;outline:none;flex:1;font-size:13px;font-family:inherit;">
+            <span class="material-icons" style="font-size:18px;color:#1378A3;">calendar_month</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:700;margin-bottom:4px;"><span style="color:#C0392B;">*</span>To Date <span style="font-weight:400;color:#888;">MM/DD/YYYY</span></div>
+          <div style="display:flex;align-items:center;border:1px solid #ccc;border-radius:3px;padding:6px 10px;width:200px;background:#fff;">
+            <input type="text" placeholder="" style="border:none;outline:none;flex:1;font-size:13px;font-family:inherit;">
+            <span class="material-icons" style="font-size:18px;color:#1378A3;">calendar_month</span>
+          </div>
+        </div>
+        <button style="background:#1D4E6B;color:#fff;border:none;border-radius:3px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <span class="material-icons" style="font-size:16px;">search</span> Search
+        </button>
+        <button style="background:none;border:none;cursor:pointer;color:#1378A3;font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px;">
+          <span style="font-size:16px;">&#x2715;</span> Clear
+        </button>
+      </div>
+      <div style="color:#C0392B;font-size:13px;margin-bottom:10px;">There are 0 alerts with new status</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="background:#f0f0f0;">
+            <th style="padding:8px;width:32px;"><input type="checkbox" checked></th>
+            <th style="padding:8px;text-align:left;font-weight:600;border:1px solid #ddd;">Source Alert Description</th>
+            <th style="padding:8px;text-align:left;font-weight:600;border:1px solid #ddd;">Member Alert Description</th>
+            <th style="padding:8px;text-align:left;font-weight:600;border:1px solid #ddd;">Type</th>
+            <th style="padding:8px;text-align:left;font-weight:600;border:1px solid #ddd;">Source</th>
+            <th style="padding:8px;text-align:left;font-weight:600;border:1px solid #ddd;">Alert Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #eee;"><input type="checkbox" checked></td>
+            <td style="padding:8px;border-bottom:1px solid #eee;">Care Plan Updated</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;">Care Plan Updated</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;">N/A</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;">CM(ALERTS)</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;">05/29/2026</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Footer -->
+    <div style="padding:20px 24px;display:flex;justify-content:center;gap:16px;border-top:1px solid #eee;">
+      <button onclick="document.getElementById('mariaAlertsOverlay').style.display='none'" style="background:#1D4E6B;color:#fff;border:none;border-radius:3px;padding:10px 40px;font-size:14px;font-weight:600;cursor:pointer;min-width:160px;">Acknowledge</button>
+      <button onclick="document.getElementById('mariaAlertsOverlay').style.display='none'" style="background:#fff;color:#1D4E6B;border:2px solid #1D4E6B;border-radius:3px;padding:10px 40px;font-size:14px;font-weight:600;cursor:pointer;min-width:160px;">Dismiss</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.member-link[data-member="maria-rivera"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      document.getElementById('mariaAlertsOverlay').style.display = 'flex';
+    }, true);
+  });
+</script>
 
 </body>
 </html>
