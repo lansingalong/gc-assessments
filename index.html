@@ -6327,13 +6327,17 @@ function rrTypeChange(val) {
 </div>
 
 <script>
-  document.querySelectorAll('.member-link[data-member="maria-rivera"]').forEach(function(link) {
-    link.addEventListener('click', function(e) {
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      document.getElementById('mariaAlertsOverlay').style.display = 'flex';
-    }, true);
-  });
+  var rrTbodyEl = document.getElementById('requestReceivedTbody');
+  if (rrTbodyEl) {
+    rrTbodyEl.addEventListener('click', function(e) {
+      var link = e.target.closest('a[data-member="maria-rivera"]');
+      if (link) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('mariaAlertsOverlay').style.display = 'flex';
+      }
+    });
+  }
 </script>
 
 </body>
