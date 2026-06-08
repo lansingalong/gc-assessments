@@ -527,7 +527,7 @@
               <td style="padding:4px 8px;">01/15/2024</td>
               <td style="padding:4px 8px;">Diabetes Management</td>
             </tr>
-            <tr data-assigned-type="all">
+            <tr>
               <td style="padding:4px 8px;"><span class="material-icons" style="font-size:14px;color:var(--teal);">check_circle</span></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Active</a></td>
               <td style="padding:4px 8px;"><a href="#" class="gc-kv-link member-link" data-member="maria-rivera">Rivera</a></td>
@@ -714,7 +714,7 @@
         <label style="font-weight:700;color:var(--text-label);">Module</label>
         <select style="width:55px;"><option>CM</option><option>UM</option></select>
         <label style="font-weight:700;color:var(--text-label);">Type</label>
-        <select id="rr-type-select" style="width:80px;" onchange="rrTypeChange(this.value)"><option>Activity</option><option>Member</option><option>Messages</option><option>Appointment</option><option>Care Plan</option><option>Faxes</option></select>
+        <select id="rr-type-select" style="width:80px;" onchange="rrTypeChange(this.value)"><option selected>Member</option><option>Activity</option><option>Messages</option><option>Appointment</option><option>Care Plan</option><option>Faxes</option></select>
         <label style="font-weight:700;color:var(--text-label);">Member Name</label>
         <input type="text" style="width:100px;">
         <label style="font-weight:700;color:var(--text-label);">Risk Type</label>
@@ -755,6 +755,17 @@
             </tr>
           </thead>
           <tbody id="requestReceivedTbody">
+            <tr data-rr-type="member">
+              <td style="padding:4px 8px;"><input type="checkbox"></td>
+              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link" data-member="james-oconnor">O'Connor, James</a></td>
+              <td style="padding:4px 8px;">Care Coordination</td>
+              <td style="padding:4px 8px;">06/08/2026</td>
+              <td style="padding:4px 8px;">06/08/2026</td>
+              <td style="padding:4px 8px;">Beatrice Kanya</td>
+              <td style="padding:4px 8px;">High</td>
+              <td style="padding:4px 8px;">Accepted</td>
+              <td style="padding:4px 8px;"><span style="background:#315E7B;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:2px;">WQ</span></td>
+            </tr>
           </tbody>
         </table>
         <table id="rr-table-careplan" class="gc-table" style="font-size:11px;display:none;">
@@ -5079,24 +5090,34 @@ window._gcAllAssessmentQA = {
       d.carePlanOGI.push({ assessmentType: assessmentType, opportunity: tpl.opportunity, goal: tpl.goal, condition: tpl.condition, intervention: tpl.intervention, priority: tpl.priority });
     }
 
-    // Add row to Request Received
+    // Add rows to Request Received
     var rrTbody = document.getElementById('requestReceivedTbody');
     if (rrTbody) {
       var existing = rrTbody.querySelector('tr[data-maria-completed]');
       if (existing) existing.remove();
-      var tr = document.createElement('tr');
-      tr.dataset.mariaCompleted = '1';
-      tr.innerHTML =
+      var existingActivity = rrTbody.querySelector('tr[data-maria-activity]');
+      if (existingActivity) existingActivity.remove();
+
+      // Activity-type row only (Pending)
+      var trActivity = document.createElement('tr');
+      trActivity.dataset.mariaActivity = '1';
+      trActivity.dataset.rrType = 'activity';
+      trActivity.style.display = 'none';
+      trActivity.innerHTML =
         '<td style="padding:4px 8px;"><input type="checkbox"></td>' +
         '<td style="padding:4px 8px;"><a href="#" class="gc-kv-link" data-member="maria-rivera">Maria Rivera</a></td>' +
-        '<td style="padding:4px 8px;">' + (assessmentType || 'Health Risk Assessment') + '</td>' +
+        '<td style="padding:4px 8px;">Assessment</td>' +
         '<td style="padding:4px 8px;">' + createdStr + '</td>' +
         '<td style="padding:4px 8px;">' + createdStr + '</td>' +
         '<td style="padding:4px 8px;">Beatrice Kanya</td>' +
         '<td style="padding:4px 8px;">High</td>' +
-        '<td style="padding:4px 8px;">Accepted</td>' +
+        '<td style="padding:4px 8px;">Pending</td>' +
         '<td style="padding:4px 8px;"><span style="background:#315E7B;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:2px;">WQ</span></td>';
-      rrTbody.insertBefore(tr, rrTbody.firstChild);
+      rrTbody.insertBefore(trActivity, rrTbody.firstChild);
+
+      // Apply current filter to show/hide new rows correctly
+      var typeSelect = document.getElementById('rr-type-select');
+      if (typeSelect) rrTypeChange(typeSelect.value);
     }
 
     // Re-render and navigate to Activity Summary if on Maria Rivera's profile
@@ -5380,6 +5401,19 @@ function rrTypeChange(val) {
   document.getElementById('rr-table-careplan').style.display = isCarePlan ? '' : 'none';
   document.getElementById('rr-btn-accept').style.display = isCarePlan ? 'none' : '';
   document.getElementById('rr-btn-careplan').style.display = isCarePlan ? '' : 'none';
+  if (!isCarePlan) {
+    var rows = document.querySelectorAll('#requestReceivedTbody tr');
+    rows.forEach(function(row) {
+      var rowType = row.dataset.rrType || 'member';
+      if (val === 'Member') {
+        row.style.display = rowType === 'member' ? '' : 'none';
+      } else if (val === 'Activity') {
+        row.style.display = rowType === 'activity' ? '' : 'none';
+      } else {
+        row.style.display = '';
+      }
+    });
+  }
 }
 </script>
 

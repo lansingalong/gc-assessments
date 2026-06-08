@@ -810,7 +810,7 @@
         <label style="font-weight:700;color:var(--text-label);">Module</label>
         <select style="width:55px;"><option>CM</option><option>UM</option></select>
         <label style="font-weight:700;color:var(--text-label);">Type</label>
-        <select style="width:80px;"><option>Member</option><option>UM Activity</option></select>
+        <select style="width:80px;"><option selected>Member</option><option>Activity</option><option>UM Activity</option></select>
         <label style="font-weight:700;color:var(--text-label);">Member Name</label>
         <input type="text" style="width:100px;">
         <label style="font-weight:700;color:var(--text-label);">Risk Type</label>
@@ -849,25 +849,14 @@
           <tbody id="requestReceivedTbody">
             <tr>
               <td style="padding:4px 8px;"><input type="checkbox"></td>
-              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Robert Chen</a></td>
-              <td style="padding:4px 8px;">Assessment- Fall Prevention</td>
-              <td style="padding:4px 8px;">04/10/2026</td>
-              <td style="padding:4px 8px;">04/10/2026</td>
-              <td style="padding:4px 8px;">Beatrice Kanya</td>
-              <td style="padding:4px 8px;">N/A</td>
-              <td style="padding:4px 8px;">Complete</td>
-              <td style="padding:4px 8px;"><span style="background:#005d9f;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;">WQ</span></td>
-            </tr>
-            <tr>
-              <td style="padding:4px 8px;"><input type="checkbox"></td>
-              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">Sarah Williams</a></td>
-              <td style="padding:4px 8px;">Assessment- Maternal Health</td>
-              <td style="padding:4px 8px;">04/15/2026</td>
-              <td style="padding:4px 8px;">04/15/2026</td>
-              <td style="padding:4px 8px;">Beatrice Kanya</td>
-              <td style="padding:4px 8px;">High</td>
+              <td style="padding:4px 8px;"><a href="#" class="gc-kv-link">James O'Connor</a></td>
+              <td style="padding:4px 8px;">Appointment Reminder</td>
+              <td style="padding:4px 8px;">06/10/2026</td>
+              <td style="padding:4px 8px;">06/04/2026</td>
+              <td style="padding:4px 8px;">James O'Connor</td>
+              <td style="padding:4px 8px;">Medium</td>
               <td style="padding:4px 8px;">Pending</td>
-              <td style="padding:4px 8px;"><span style="background:#005d9f;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600;">WQ</span></td>
+              <td style="padding:4px 8px;"></td>
             </tr>
           </tbody>
         </table>
@@ -884,7 +873,7 @@
           <option>10</option><option>25</option><option>50</option>
         </select>
         <span style="font-size:10px;color:var(--text-muted);">items per page</span>
-        <span style="margin-left:auto;font-size:11px;">1 - 2 of 2 items</span>
+        <span style="margin-left:auto;font-size:11px;">1 - 1 of 1 items</span>
         <span class="material-icons" style="font-size:14px;cursor:pointer;color:var(--text-muted);margin-left:4px;">refresh</span>
       </div>
     </div>
@@ -5505,6 +5494,40 @@ function openScriptResponseModal() {
   window.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'SUKI_NOTE_READY' && window._gcOpenSukiNote) {
       window._gcOpenSukiNote(e.data.noteText || '');
+    }
+  });
+
+  // Navigate to a member and open a specific left-nav tab
+  window.addEventListener('message', function(e) {
+    if (!e.data || e.data.type !== 'MEMBER_SWITCH_TAB') return;
+    var memberId = e.data.memberId;
+    var tab = e.data.tab;
+    // Switch to the member using the same path as clicking a member-link
+    if (memberId && memberData[memberId]) {
+      populateProfile(memberId);
+      document.querySelectorAll('.member-switcher-item').forEach(function(i) {
+        i.classList.remove('active');
+        var ck = i.querySelector('.material-icons');
+        if (ck) ck.remove();
+        if (i.getAttribute('data-member') === memberId) {
+          i.classList.add('active');
+          var cs = document.createElement('span');
+          cs.className = 'material-icons';
+          cs.style.cssText = 'font-size:14px;color:var(--teal);';
+          cs.textContent = 'check';
+          i.appendChild(cs);
+        }
+      });
+      showMemberView();
+    }
+    // Switch to the requested tab
+    if (tab) {
+      document.querySelectorAll('.left-panel').forEach(function(p) { p.style.display = ''; p.classList.remove('active'); });
+      document.querySelectorAll('.gc-left-item').forEach(function(li) { li.classList.remove('active'); });
+      var navItem = document.querySelector('.gc-left-item[data-left="' + tab + '"]');
+      if (navItem) navItem.classList.add('active');
+      var panel = document.getElementById('panel-' + tab);
+      if (panel) panel.classList.add('active');
     }
   });
 
